@@ -3,16 +3,12 @@
 #include <tchar.h>
 
 #include <type_traits>
+#include <memory>
+
+#include "RenderWindow.h"
+#include "util.h"
 
 constexpr TCHAR kWindowClassName[] = _T("Graphics Tutorial Window");
-
-template <typename T> 
-void ZeroInitialize(T& t) noexcept {
-	static_assert(std::is_standard_layout_v<T>, "ZeroInitialize can not be used on non-standard-layout types");
-	ZeroMemory(&t, sizeof(T)); 
-}
-
-LRESULT CALLBACK MainWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 int WINAPI WinMain(
 	HINSTANCE hInstance,
@@ -20,34 +16,20 @@ int WINAPI WinMain(
 	LPSTR,
 	int)
 {
-	WNDCLASSEX wndClass{
-		sizeof(WNDCLASSEX),
-		0,
-		& MainWndProc,
-		0,
-		0,
-		hInstance,
-		LoadIcon(NULL, IDI_APPLICATION),
-		LoadCursor(NULL, IDC_ARROW),
-		nullptr,
-		nullptr,
-		kWindowClassName,
-		nullptr
-	};
+	CoInitializeEx(NULL, COINIT_MULTITHREADED);
 
-	RegisterClassEx(&wndClass);
+	LARGE_INTEGER qptLi;
+	QueryPerformanceFrequency(&qptLi);
+	double qptFrequency = 1.0 * qptLi.QuadPart;
 
-	HWND hMainWnd = CreateWindow(
-		kWindowClassName,
-		kWindowClassName,
-		WS_OVERLAPPEDWINDOW | WS_VISIBLE,
-		CW_USEDEFAULT, CW_USEDEFAULT,
-		CW_USEDEFAULT, CW_USEDEFAULT,
-		nullptr,
-		nullptr,
-		hInstance,
-		nullptr
-	);
+	QueryPerformanceCounter(&qptLi);
+	double qptStartup{ qptLi.QuadPart / qptFrequency };
+
+	std::shared_ptr<RenderWindow> mainWindow = std::make_shared<RenderWindow>();
+	mainWindow->Create();
+
+	LARGE_INTEGER qptLastUpdate;
+	QueryPerformanceCounter(&qptLastUpdate);
 
 	MSG msg;
 	ZeroInitialize(msg);
@@ -58,26 +40,12 @@ int WINAPI WinMain(
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
-	}
-}
 
-LRESULT CALLBACK MainWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
-{
-	switch (msg)
-	{
-	case WM_ERASEBKGND: return 0;
-	case WM_PAINT:
-	{
-		PAINTSTRUCT ps;
-		BeginPaint(hWnd, &ps);
-		EndPaint(hWnd, &ps);
-		return 0;
+		QueryPerformanceCounter(&qptLi);
+		double interval = (qptLi.QuadPart - qptLastUpdate.QuadPart) / qptFrequency;
+		mainWindow->Update(interval);
+		qptLastUpdate = qptLi;
 	}
 
-	case WM_DESTROY:
-		PostQuitMessage(0);
-		break;
-	}
-
-	return DefWindowProc(hWnd, msg, wParam, lParam);
+	CoUninitialize();
 }
