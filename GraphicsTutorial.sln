@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Ch01 Creating The Window", 
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Ch02 Creating The Window", "Ch02 Initializing DirectX\Ch02 Creating The Window.vcxproj", "{BCA6E8A1-6C2E-4E31-B85C-6216F729CDE3}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Ch03 Babys First Triangle", "Ch03 Babys Firt Triangle\Ch03 Babys First Triangle.vcxproj", "{F59BCBBC-067C-4D20-A643-D511562C8DC8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -31,6 +33,14 @@ Global
 		{BCA6E8A1-6C2E-4E31-B85C-6216F729CDE3}.Release|x64.Build.0 = Release|x64
 		{BCA6E8A1-6C2E-4E31-B85C-6216F729CDE3}.Release|x86.ActiveCfg = Release|Win32
 		{BCA6E8A1-6C2E-4E31-B85C-6216F729CDE3}.Release|x86.Build.0 = Release|Win32
+		{F59BCBBC-067C-4D20-A643-D511562C8DC8}.Debug|x64.ActiveCfg = Debug|x64
+		{F59BCBBC-067C-4D20-A643-D511562C8DC8}.Debug|x64.Build.0 = Debug|x64
+		{F59BCBBC-067C-4D20-A643-D511562C8DC8}.Debug|x86.ActiveCfg = Debug|Win32
+		{F59BCBBC-067C-4D20-A643-D511562C8DC8}.Debug|x86.Build.0 = Debug|Win32
+		{F59BCBBC-067C-4D20-A643-D511562C8DC8}.Release|x64.ActiveCfg = Release|x64
+		{F59BCBBC-067C-4D20-A643-D511562C8DC8}.Release|x64.Build.0 = Release|x64
+		{F59BCBBC-067C-4D20-A643-D511562C8DC8}.Release|x86.ActiveCfg = Release|Win32
+		{F59BCBBC-067C-4D20-A643-D511562C8DC8}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

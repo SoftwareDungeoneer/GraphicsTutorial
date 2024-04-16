@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="RenderWindow.cpp" />
+    <ClCompile Include="util.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="RenderWindow.h" />
+    <ClInclude Include="ComPtr.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="util.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{5d1d3f52-cf49-40f8-a7f7-b41b042be94d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Vertex">
+      <UniqueIdentifier>{bd080a1c-30af-41e8-9100-fdd6b800a965}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Pixel">
+      <UniqueIdentifier>{6a521adc-1614-4eb1-bb58-0dbe05a7f7c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utility">
+      <UniqueIdentifier>{3ca9a34c-8e3f-4360-87a8-e81761329491}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="SolidFill.hlsl">
+      <Filter>Shaders\Pixel</Filter>
+    </FxCompile>
+    <FxCompile Include="ClientToNdc.hlsl">
+      <Filter>Shaders\Vertex</Filter>
+    </FxCompile>
+  </ItemGroup>
+</Project>
