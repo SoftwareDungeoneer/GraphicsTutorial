@@ -41,9 +41,9 @@ public:
 		return sqrt(MagnitudeSquared());
 	}
 
-	inline Vec2& operator+(const Vec2& rhs) { Add(rhs); }
-	inline Vec2& operator-(const Vec2& rhs) { Sub(rhs); }
-	inline Vec2& operator*(float rhs) { Scale(rhs); }
+	inline Vec2& operator+=(const Vec2& rhs) { Add(rhs); return *this; }
+	inline Vec2& operator-=(const Vec2& rhs) { Sub(rhs); return *this; }
+	inline Vec2& operator*=(float rhs) { Scale(rhs); return *this; }
 
 	float x, y;
 

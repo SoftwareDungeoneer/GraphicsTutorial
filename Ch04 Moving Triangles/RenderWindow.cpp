@@ -296,6 +296,8 @@ void RenderWindow::InitializeTriangles()
 	{
 		tri.position.x = dist(engine) * 800;
 		tri.position.y = dist(engine) * 600;
+		tri.veloicty.x = 60 * (2 * dist(engine) - 1);
+		tri.veloicty.y = 60 * (2 * dist(engine) - 1);
 		tri.color[0] = dist(engine);
 		tri.color[1] = dist(engine);
 		tri.color[2] = dist(engine);
@@ -305,17 +307,30 @@ void RenderWindow::InitializeTriangles()
 
 void RenderWindow::Update(double elapsed)
 {
-	static unsigned bgIndex{ 0 };
-
 	if (!enableUpdate)
 		return;
 
-	elapsedInterval += elapsed;
-	if (elapsedInterval < 0.2)
-		return;
+	for (auto& tri : triangles)
+	{
+		tri.position += tri.veloicty * float(elapsed);
+		if (tri.position.x < 0.f)
+			tri.position.x += 800.f;
+		if (tri.position.x > 800.f)
+			tri.position.x -= 800.f;
+		if (tri.position.y > 600.f)
+			tri.position.y -= 600.f;
+		if (tri.position.y < 0.f)
+			tri.position.y += 600.f;
+	}
+}
 
-	elapsedInterval = 0.0;
+void RenderWindow::Render()
+{
+	static unsigned bgIndex{ 0 };
 
+	if (!enableUpdate)
+		return; 
+	
 	ComPtr<ID3D11Texture2D> pBackBuffer;
 	ComPtr<ID3D11RenderTargetView> pRenderTarget;
 

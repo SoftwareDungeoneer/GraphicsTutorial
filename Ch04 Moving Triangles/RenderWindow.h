@@ -19,6 +19,7 @@ public:
 	HRESULT Create();
 
 	void Update(double elapsed);
+	void Render();
 
 private:
 	RenderWindow(RenderWindow&&) = delete;
@@ -67,7 +68,7 @@ private:
 		float color[4];
 	} vscbInstanceBuffer;
 
-	static const unsigned kNumTriangles = 10;
+	static const unsigned kNumTriangles = 100;
 	struct TriangleData {
 		Vec2 position;
 		Vec2 veloicty;

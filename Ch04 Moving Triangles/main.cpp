@@ -44,6 +44,7 @@ int WINAPI WinMain(
 		QueryPerformanceCounter(&qptLi);
 		double interval = (qptLi.QuadPart - qptLastUpdate.QuadPart) / qptFrequency;
 		mainWindow->Update(interval);
+		mainWindow->Render();
 		qptLastUpdate = qptLi;
 	}
 
