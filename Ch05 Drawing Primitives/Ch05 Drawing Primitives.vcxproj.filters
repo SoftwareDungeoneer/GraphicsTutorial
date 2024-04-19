@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <FxCompile Include="ClientToNdc.hlsl">
+      <Filter>Shaders\Vertex</Filter>
+    </FxCompile>
+    <FxCompile Include="SolidFill.hlsl">
+      <Filter>Shaders\Pixel</Filter>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="RenderWindow.cpp" />
+    <ClCompile Include="util.cpp" />
+    <ClCompile Include="Vec2.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="RenderWindow.h" />
+    <ClInclude Include="util.h" />
+    <ClInclude Include="ComPtr.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Vec2.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{4fd2c1f2-7136-4317-be48-fe436c861e9f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Pixel">
+      <UniqueIdentifier>{a9e4f01f-29ba-4749-b91e-4b7c36a0d7a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Vertex">
+      <UniqueIdentifier>{0f660f98-9b45-4f2d-bcbd-8db645af96e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utility">
+      <UniqueIdentifier>{62ea0f8a-5d2c-4506-b4bd-31f3b722a59d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Math">
+      <UniqueIdentifier>{90326961-0f52-43f2-8fac-7c03d8a7b6c6}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
