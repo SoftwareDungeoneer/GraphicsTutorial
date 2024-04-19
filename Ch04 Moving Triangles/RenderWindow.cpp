@@ -33,6 +33,10 @@ namespace
 	};
 	const D3D11_INPUT_ELEMENT_DESC Vertex::desc[] = {
 		{ "POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+
+		// Per instance data
+		{ "IPOS", 0, DXGI_FORMAT_R32G32_FLOAT, 1, 0, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+		{ "ICOLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 1, 16, D3D11_INPUT_PER_INSTANCE_DATA, 1  }
 	};
 }
 
@@ -281,7 +285,8 @@ void RenderWindow::InitializeRendering()
 	};
 	pDevice->CreateBuffer(&cbufferDesc, nullptr, &*viewportCBuffer);
 
-	cbufferDesc.ByteWidth = sizeof(vscbInstanceBuffer);
+	cbufferDesc.ByteWidth = sizeof(triangles);
+	cbufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	pDevice->CreateBuffer(&cbufferDesc, nullptr, &*instanceCBuffer);
 }
 
@@ -294,10 +299,10 @@ void RenderWindow::InitializeTriangles()
 	ZeroInitialize(triangles);
 	for (auto& tri : triangles)
 	{
-		tri.position.x = dist(engine) * 800;
-		tri.position.y = dist(engine) * 600;
-		tri.veloicty.x = 60 * (2 * dist(engine) - 1);
-		tri.veloicty.y = 60 * (2 * dist(engine) - 1);
+		tri.position.x = dist(engine) * 750 + 25;
+		tri.position.y = dist(engine) * 550;
+		tri.velocity.x = 120 * (2 * dist(engine) - 1);
+		tri.velocity.y = 120 * (2 * dist(engine) - 1);
 		tri.color[0] = dist(engine);
 		tri.color[1] = dist(engine);
 		tri.color[2] = dist(engine);
@@ -312,15 +317,11 @@ void RenderWindow::Update(double elapsed)
 
 	for (auto& tri : triangles)
 	{
-		tri.position += tri.veloicty * float(elapsed);
-		if (tri.position.x < 0.f)
-			tri.position.x += 800.f;
-		if (tri.position.x > 800.f)
-			tri.position.x -= 800.f;
-		if (tri.position.y > 600.f)
-			tri.position.y -= 600.f;
-		if (tri.position.y < 0.f)
-			tri.position.y += 600.f;
+		tri.position += tri.velocity * float(elapsed);
+		if (tri.position.x <= 8.f || tri.position.x >= 792.f)
+			tri.velocity.x *= -1;
+		if (tri.position.y <= 0.f || tri.position.y >= 588.f)
+			tri.velocity.y *= -1;
 	}
 }
 
@@ -346,21 +347,26 @@ void RenderWindow::Render()
 	vscbViewport.viewportHeight = viewport.Height;
 	pDeviceContext->UpdateSubresource(*viewportCBuffer, 0, nullptr, &vscbViewport, 0, 0);
 
+	pDeviceContext->UpdateSubresource(*instanceCBuffer, 0, nullptr, &triangles, 0, 0);
+
 	// Set up input assembler
-	unsigned stride = sizeof(Vertex);
-	unsigned offset = 0;
+	unsigned strides[2] = { sizeof(Vertex), sizeof(TriangleData) };
+	unsigned offsets[2] = { 0, 0 };
 	pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	pDeviceContext->IASetIndexBuffer(*indexBuffer, DXGI_FORMAT_R16_UINT, 0);
 	pDeviceContext->IASetInputLayout(*inputLayout);
-	pDeviceContext->IASetVertexBuffers(0, 1, &*vertexBuffer, &stride, &offset);
+	std::array<ID3D11Buffer*, 2> vsIndexBuffers = {
+		*vertexBuffer,
+		*instanceCBuffer
+	};
+	pDeviceContext->IASetVertexBuffers(0, 2, vsIndexBuffers.data(), strides, offsets);
 
 	// Set up vertex shadr
-	std::array<ID3D11Buffer*, 2> vsConstantBuffers = {
-		*instanceCBuffer,
+	std::array<ID3D11Buffer*, 1> vsConstantBuffers = {
 		*viewportCBuffer,
 	};
 	pDeviceContext->VSSetShader(*vertexShader, nullptr, 0);
-	pDeviceContext->VSSetConstantBuffers(0, 2, vsConstantBuffers.data());
+	pDeviceContext->VSSetConstantBuffers(0, 1, vsConstantBuffers.data());
 
 	// Set up rasterizer
 	pDeviceContext->RSSetViewports(1, &viewport);
@@ -372,11 +378,7 @@ void RenderWindow::Render()
 	pDeviceContext->PSSetShader(*pixelShader, nullptr, 0);
 
 	// Dispatch draw
-	for (const auto& tri : triangles)
-	{
-		pDeviceContext->UpdateSubresource(*instanceCBuffer, 0, nullptr, &tri, 0, 0);
-		pDeviceContext->DrawIndexed(3, 0, 0);
-	}
+	pDeviceContext->DrawIndexedInstanced(3, kNumTriangles, 0, 0, 0);
 
 	pSwapChain->Present(1, 0);
 }

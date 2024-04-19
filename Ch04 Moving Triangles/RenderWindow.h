@@ -71,7 +71,7 @@ private:
 	static const unsigned kNumTriangles = 100;
 	struct TriangleData {
 		Vec2 position;
-		Vec2 veloicty;
+		Vec2 velocity;
 		float color[4];
 	} triangles[kNumTriangles];
 };

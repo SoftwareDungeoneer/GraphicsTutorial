@@ -41,6 +41,12 @@ public:
 		return sqrt(MagnitudeSquared());
 	}
 
+	Vec2& Normalize() {
+		auto m{ Magnitude() };
+		x /= m;
+		y /= m;
+	}
+
 	inline Vec2& operator+=(const Vec2& rhs) { Add(rhs); return *this; }
 	inline Vec2& operator-=(const Vec2& rhs) { Sub(rhs); return *this; }
 	inline Vec2& operator*=(float rhs) { Scale(rhs); return *this; }
@@ -69,6 +75,12 @@ inline Vec2 Sub(const Vec2& lhs, const Vec2& rhs)
 inline float Dot(const Vec2& lhs, const Vec2& rhs)
 {
 	return (lhs.x * rhs.x) + (lhs.y * rhs.y);
+}
+
+inline Vec2 Normalize(const Vec2& v)
+{
+	auto m{ v.Magnitude() };
+	return { v.x / m, v.y / m };
 }
 
 inline Vec2 operator+(const Vec2& lhs, const Vec2& rhs) { return Add(lhs, rhs); }
