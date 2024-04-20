@@ -24,12 +24,16 @@ struct VSOut
 
 VSOut main(uint vertid : SV_VertexID)
 {
-	VSOut vsOut = {
-		float4(position, 0, 1),
-		color
-	};
 	
-	float theta = TAU / numVerts;
-	vsOut.pos.xy = (radius * float2(cos(theta), sin(theta))) + position;
+    float theta = (TAU / numVerts) * (vertid >> 1);
+    float r = radius * (~vertid & 1);
+    float2 ssxy = r * float2(cos(theta + PI/2), sin(theta + PI/2)) + position;
+    ssxy = (2 * ssxy / vpDimensions) - 1;
+    VSOut vsOut =
+    {
+        float4(ssxy, 0, 1),
+		color	
+    };
+	
 	return vsOut;
 }

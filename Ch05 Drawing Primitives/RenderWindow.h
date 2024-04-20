@@ -26,6 +26,8 @@ protected:
 	unsigned windowWidth{ 0 };
 	unsigned windowHeight{ 0 };
 
+	bool enableUpdate{ false };
+
 	ComPtr<ID3D11Device> pDevice;
 	ComPtr<ID3D11DeviceContext> pDeviceContext;
 	ComPtr<IDXGISwapChain> pSwapChain;
