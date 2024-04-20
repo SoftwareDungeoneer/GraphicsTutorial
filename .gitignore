@@ -372,3 +372,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/Ch05 Drawing Primitives/ClientToNdc.cso
+/Ch05 Drawing Primitives/RegularPolyVS.cso
+/Ch05 Drawing Primitives/SolidFill.cso
