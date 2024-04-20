@@ -6,6 +6,7 @@
 #include <memory>
 
 #include "RenderWindow.h"
+#include "Ch05_DrawingPrimitives.h"
 #include "util.h"
 
 constexpr TCHAR kWindowClassName[] = _T("Graphics Tutorial Window");
@@ -25,7 +26,7 @@ int WINAPI WinMain(
 	QueryPerformanceCounter(&qptLi);
 	double qptStartup{ qptLi.QuadPart / qptFrequency };
 
-	std::shared_ptr<RenderWindow> mainWindow = std::make_shared<RenderWindow>();
+	std::shared_ptr<RenderWindow> mainWindow = std::make_shared<DrawingPrimitives>();
 	mainWindow->Create();
 
 	LARGE_INTEGER qptLastUpdate;

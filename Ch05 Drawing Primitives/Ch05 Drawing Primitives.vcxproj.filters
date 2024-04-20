@@ -7,6 +7,9 @@
     <FxCompile Include="SolidFill.hlsl">
       <Filter>Shaders\Pixel</Filter>
     </FxCompile>
+    <FxCompile Include="RegularPolyVS.hlsl">
+      <Filter>Shaders\Vertex</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -15,6 +18,7 @@
     <ClCompile Include="Vec2.cpp">
       <Filter>Math</Filter>
     </ClCompile>
+    <ClCompile Include="Ch05_DrawingPrimitives.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="RenderWindow.h" />
@@ -25,6 +29,7 @@
     <ClInclude Include="Vec2.h">
       <Filter>Math</Filter>
     </ClInclude>
+    <ClInclude Include="Ch05_DrawingPrimitives.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Shaders">
