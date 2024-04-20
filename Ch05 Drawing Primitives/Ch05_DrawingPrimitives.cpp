@@ -22,14 +22,15 @@ constexpr float kBackgroundColors[][4]{
 using LineNode = DrawingPrimitives::LineNode;
 const D3D11_INPUT_ELEMENT_DESC LineNode::desc[] = {
 	{ "POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-	{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 16, D3D11_INPUT_PER_VERTEX_DATA, 0}
+	{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, offsetof(LineNode, color), D3D11_INPUT_PER_VERTEX_DATA, 0}
 };
 
 DrawingPrimitives::LineNode DrawingPrimitives::linePoints[] = {
 	{ {  20,  20 }, 1 },
 	{ { 750,  40 }, 2 },
 	{ { 750, 500 }, 3 },
-	{ { 20, 599 }, 4 }
+	{ { 20, 599 }, 4 },
+	{ {  20,  20 }, 1 },
 };
 
 template <typename T, unsigned N>
@@ -73,7 +74,7 @@ void DrawingPrimitives::Initialize() {
 		unsigned n = unsigned(pt.color[0]);
 		memcpy(pt.color, kBackgroundColors[n], sizeof(float[4]));
 	}
-	bufferDesc.ByteWidth = aligned_size_16<LineNode> * countof(linePoints);
+	bufferDesc.ByteWidth = sizeof(linePoints); // aligned_size_16<LineNode>* countof(linePoints);
 	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	D3D11_SUBRESOURCE_DATA srd
 	{
@@ -130,8 +131,13 @@ void DrawingPrimitives::Render() {
 		*viewportCBuffer,
 		*instanceCBuffer
 	};
-
+	unsigned strides[] = { sizeof(LineNode) };
+	unsigned offsets[] = { 0 };
+	
+	ID3D11Buffer* pNullptr{ nullptr };
+	
 	pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+	pDeviceContext->IASetVertexBuffers(0, 1, &pNullptr, strides, offsets);
 	pDeviceContext->RSSetViewports(1, &viewport);
 	pDeviceContext->OMSetRenderTargets(1, &*pRenderTarget, nullptr);
 
@@ -142,8 +148,7 @@ void DrawingPrimitives::Render() {
 	pDeviceContext->Draw(2 * instanceData.numVerts + 1, 0);
 
 	// Draw lines
-	unsigned strides[] = { sizeof(LineNode) };
-	unsigned offsets[] = { 0 };
+
 	pDeviceContext->VSSetShader(*clientToNdcVS, nullptr, 0);
 	pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
 	pDeviceContext->IASetInputLayout(*linesInputLayout);
