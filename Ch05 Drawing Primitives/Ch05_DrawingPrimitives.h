@@ -37,7 +37,7 @@ private:
 public:
 	struct __declspec(align(16)) LineNode {
 		float pos[2];
-		float color[4];
+		__declspec(align(16)) float color[4];
 		static const D3D11_INPUT_ELEMENT_DESC desc[];
 	} static linePoints[];
 };
