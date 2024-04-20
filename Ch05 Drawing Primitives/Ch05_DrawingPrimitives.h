@@ -30,9 +30,11 @@ private:
 	{
 		Vec2 pos;
 		float radius;
-		unsigned numVerts;
+		float angle;
 		float color[4];
-	} instanceData;
+		unsigned numVerts;
+		unsigned mode;
+	} instanceData, outlineData;
 
 public:
 	struct __declspec(align(16)) LineNode {

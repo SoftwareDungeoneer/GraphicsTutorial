@@ -3,6 +3,7 @@
 #include <tchar.h>
 
 #include <array>
+#include <numbers>
 
 #include "util.h"
 
@@ -65,6 +66,7 @@ void DrawingPrimitives::Initialize() {
 
 	instanceData.numVerts = 3;
 	instanceData.radius = 50.f;
+	instanceData.angle = 0.f;
 
 	bufferDesc.ByteWidth = aligned_size_16<InstanceCData>;
 	pDevice->CreateBuffer(&bufferDesc, nullptr, &*instanceCBuffer);
@@ -92,24 +94,32 @@ void DrawingPrimitives::Update(double elapsed) {
 	if (!enableUpdate)
 		return;
 
+	instanceData.angle += .5f * elapsed;
+	
 	static unsigned counter{ 0 };
 	elapsedSum += elapsed;
 	if (elapsedSum > 0.2)
 	{
-		++bgIndex;
 		++counter;
-		instanceData.numVerts += 1;
-		if (instanceData.numVerts > 36)
-			instanceData.numVerts = 3;
-		//instanceData.numVerts = 3;
+		if (counter == 3)
+		{
+			++bgIndex;
+			counter = 0;
+			instanceData.numVerts += 1;
+			if (instanceData.numVerts > 36)
+				instanceData.numVerts = 3;
+		}
 
 		elapsedSum = 0.0;
 		bgIndex %= countof(kBackgroundColors) - 1;
-		instanceData.pos.x = windowWidth / 2.f;
-		instanceData.pos.y = windowHeight / 2.f;
-		instanceData.radius = 125.f;
-		memcpy(instanceData.color, kBackgroundColors[bgIndex + 1], sizeof(float[4]));
 	}
+	instanceData.pos.x = windowWidth * 3 / 4.f;
+	instanceData.pos.y = windowHeight / 2.f;
+	instanceData.radius = 125.f;
+	if (instanceData.angle >= 2.f * std::numbers::pi_v<float>)
+		instanceData.angle -= 2.f * std::numbers::pi_v<float>;
+	instanceData.mode = 0;
+	memcpy(instanceData.color, kBackgroundColors[bgIndex + 1], sizeof(float[4]));
 }
 
 void DrawingPrimitives::Render() {
@@ -146,6 +156,13 @@ void DrawingPrimitives::Render() {
 	pDeviceContext->PSSetShader(*pixelShader, nullptr, 0);
 
 	pDeviceContext->Draw(2 * instanceData.numVerts + 1, 0);
+
+	instanceData.pos.x = windowWidth * 1.f / 4.f;
+	instanceData.mode = 1;
+	pDeviceContext->UpdateSubresource(*instanceCBuffer, 0, nullptr, &instanceData, 0, 0);
+	pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
+	pDeviceContext->Draw(instanceData.numVerts + 1, 0);
+	//pDeviceContext->Draw(4, 0);
 
 	// Draw lines
 
