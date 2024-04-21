@@ -94,7 +94,7 @@ void DrawingPrimitives::Update(double elapsed) {
 	if (!enableUpdate)
 		return;
 
-	instanceData.angle += .5f * elapsed;
+	//instanceData.angle += .5f * elapsed;
 	
 	static unsigned counter{ 0 };
 	elapsedSum += elapsed;

@@ -142,6 +142,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Ch05_DrawingPrimitives.cpp" />
+    <ClCompile Include="Ch06_PolyLines.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="RenderWindow.cpp" />
     <ClCompile Include="util.cpp" />
@@ -149,6 +150,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Ch05_DrawingPrimitives.h" />
+    <ClInclude Include="Ch06_PolyLines.h" />
     <ClInclude Include="ComPtr.h" />
     <ClInclude Include="RenderWindow.h" />
     <ClInclude Include="util.h" />

@@ -34,7 +34,7 @@ private:
 		float color[4];
 		unsigned numVerts;
 		unsigned mode;
-	} instanceData, outlineData;
+	} instanceData;
 
 public:
 	struct __declspec(align(16)) LineNode {
