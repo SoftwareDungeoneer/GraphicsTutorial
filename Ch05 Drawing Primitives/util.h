@@ -10,6 +10,15 @@
 
 #define countof(arr) (sizeof(arr) / sizeof(arr[0]))
 
+template <typename T, unsigned N>
+struct __declspec(align(N)) Aligned
+{
+	T t;
+};
+
+template <typename T, unsigned N> constexpr unsigned AlignedSize_v{ sizeof(Aligned<T, N>) };
+template <typename T> constexpr unsigned aligned_size_16 = AlignedSize_v<T, 16>;
+
 template <typename T>
 void ZeroInitialize(T& t) noexcept {
 	static_assert(std::is_standard_layout_v<T>, "ZeroInitialize can not be used on non-standard-layout types");

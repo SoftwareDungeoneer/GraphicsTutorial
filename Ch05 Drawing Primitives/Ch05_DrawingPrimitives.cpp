@@ -34,14 +34,6 @@ DrawingPrimitives::LineNode DrawingPrimitives::linePoints[] = {
 	{ {  20,  20 }, 1 },
 };
 
-template <typename T, unsigned N>
-struct __declspec(align(N)) Aligned
-{
-	T t;
-};
-
-template <typename T, unsigned N> constexpr unsigned AlignedSize_v{ sizeof(Aligned<T, N>) };
-template <typename T> constexpr unsigned aligned_size_16 = AlignedSize_v<T, 16>;
 
 
 void DrawingPrimitives::Initialize() {

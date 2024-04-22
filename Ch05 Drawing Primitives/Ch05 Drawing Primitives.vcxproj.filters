@@ -10,19 +10,27 @@
     <FxCompile Include="RegularPolyVS.hlsl">
       <Filter>Shaders\Vertex</Filter>
     </FxCompile>
+    <FxCompile Include="shaders\pixel\PolyLinePS.hlsl">
+      <Filter>Shaders\Pixel</Filter>
+    </FxCompile>
+    <FxCompile Include="shaders\vertex\PolyLineVS.hlsl">
+      <Filter>Shaders\Vertex</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="RenderWindow.cpp" />
-    <ClCompile Include="util.cpp" />
     <ClCompile Include="Vec2.cpp">
       <Filter>Math</Filter>
     </ClCompile>
     <ClCompile Include="Ch05_DrawingPrimitives.cpp" />
+    <ClCompile Include="Ch06_PolyLines.cpp" />
+    <ClCompile Include="util.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="RenderWindow.h" />
-    <ClInclude Include="util.h" />
     <ClInclude Include="ComPtr.h">
       <Filter>Utility</Filter>
     </ClInclude>
@@ -30,6 +38,10 @@
       <Filter>Math</Filter>
     </ClInclude>
     <ClInclude Include="Ch05_DrawingPrimitives.h" />
+    <ClInclude Include="Ch06_PolyLines.h" />
+    <ClInclude Include="util.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Shaders">
