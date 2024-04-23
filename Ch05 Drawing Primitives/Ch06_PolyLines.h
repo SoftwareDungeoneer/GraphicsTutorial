@@ -21,6 +21,7 @@ private:
 	ComPtr<ID3D11InputLayout> polyLineInputLayout;
 	ComPtr<ID3D11Buffer> viewportCBuffer;
 	ComPtr<ID3D11Buffer> linesVertexBuffer;
+	ComPtr<ID3D11Buffer> lineParamsBuffer;
 
 	double elapsedSum{ 0.f };
 	unsigned bgIndex{ 0 };
