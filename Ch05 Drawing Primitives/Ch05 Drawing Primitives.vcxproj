@@ -143,6 +143,8 @@
   <ItemGroup>
     <ClCompile Include="Ch05_DrawingPrimitives.cpp" />
     <ClCompile Include="Ch06_PolyLines.cpp" />
+    <ClCompile Include="Ch07_Textures.cpp" />
+    <ClCompile Include="Image.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="RenderWindow.cpp" />
     <ClCompile Include="util.cpp" />
@@ -151,7 +153,9 @@
   <ItemGroup>
     <ClInclude Include="Ch05_DrawingPrimitives.h" />
     <ClInclude Include="Ch06_PolyLines.h" />
+    <ClInclude Include="Ch07_Textures.h" />
     <ClInclude Include="ComPtr.h" />
+    <ClInclude Include="Image.h" />
     <ClInclude Include="RenderWindow.h" />
     <ClInclude Include="util.h" />
     <ClInclude Include="Vec2.h" />
