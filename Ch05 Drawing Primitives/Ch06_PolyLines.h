@@ -20,7 +20,7 @@ private:
 	ComPtr<ID3D11PixelShader> polyLinePS;
 	ComPtr<ID3D11InputLayout> polyLineInputLayout;
 	ComPtr<ID3D11Buffer> viewportCBuffer;
-	ComPtr<ID3D11Buffer> linesVertexBuffer;
+	ComPtr<ID3D11Buffer> lineVertexConstants;
 	ComPtr<ID3D11Buffer> lineParamsBuffer;
 	ComPtr<ID3D11BlendState> pBlendState;
 

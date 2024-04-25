@@ -7,6 +7,9 @@ cbuffer LineParams
     float scale;
     float clip;
     float2 rationalPowers;
+	float2 reserved_0;
+	float3 color;
+    float reserved_1;
 }
 
 float RationalFunction(float x)
@@ -38,16 +41,7 @@ struct PSIn
 
 float4 main(PSIn psIn) : SV_Target
 {
-    //float2 u = end - begin;
-    //float2 n = normalize(float2(-u.y, u.x));
-    //float2 v = psIn.ssPos.xy - begin;
-    //float2 proj_v_n = dot(v, n) * n;
-    //float alpha = RationalFalloff(length(proj_v_n));
-    
-    //return float4(1, 0, 0, alpha);
-    
-    float linearDistance = 5 * abs(psIn.norm);
-    float4 output = float4(1, 0, 0, RationalFalloff(linearDistance));
+    float linearDistance = falloffMax * abs(psIn.norm);
+    float4 output = float4(color, RationalFalloff(linearDistance));
     return float4(output);
-
 }

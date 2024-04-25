@@ -32,7 +32,9 @@ struct LineParams {
 	float scale;
 	float clip;
 	float rationalPowers[2];
-
+	float reserved0[2];
+	float color[3];
+	float reserved1;
 } lineSets[countof(kLines)];
 
 constexpr unsigned kLineParamsCBufferSize = aligned_size_16<LineParams>;
@@ -53,13 +55,13 @@ void PolyLines::Initialize()
 	);
 
 	D3D11_BUFFER_DESC bufferDesc{
-		sizeof(kLines),
+		aligned_size_16<Line>,
 		D3D11_USAGE_DEFAULT,
-		D3D11_BIND_VERTEX_BUFFER,
+		D3D11_BIND_CONSTANT_BUFFER,
 		0, 0, 0
 	};
 	D3D11_SUBRESOURCE_DATA srd{ kLines, 0, 0 };
-	pDevice->CreateBuffer(&bufferDesc, &srd, &*linesVertexBuffer);
+	pDevice->CreateBuffer(&bufferDesc, &srd, &*lineVertexConstants);
 
 	bufferDesc.ByteWidth = aligned_size_16<D3D11_VIEWPORT>;
 	bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
@@ -70,6 +72,12 @@ void PolyLines::Initialize()
 	pDevice->CreateBuffer(&bufferDesc, nullptr, &*lineParamsBuffer);
 
 	// Initialize lineSets params
+	float colors[countof(kLines)][3] = {
+		{ 1, 0, 0 },
+		{ 0, 1, 0 },
+		{ 0, 0, 1 }
+	};
+
 	for (unsigned n = 0; n < countof(kLines); ++n)
 	{
 		lineSets[n].begin = kLines[n].begin;
@@ -80,6 +88,10 @@ void PolyLines::Initialize()
 		lineSets[n].clip = 0;
 		lineSets[n].rationalPowers[0] = 1;
 		lineSets[n].rationalPowers[1] = 2;
+		lineSets[n].reserved0[0] = lineSets[n].reserved0[1] = 0.f;
+		lineSets[n].reserved1 = 0;
+		for (unsigned j = 0; n < 3; ++n)
+			lineSets[n].color[j] = colors[n][j];
 	}
 
 	D3D11_BLEND_DESC blendDesc;
@@ -119,18 +131,19 @@ void PolyLines::Render()
 	D3D11_VIEWPORT viewport{ ViewportFromTexture(pBackBuffer) };
 	pDeviceContext->UpdateSubresource(*viewportCBuffer, 0, nullptr, &viewport, 0, 0);
 
-	unsigned strides[] = { 0 };
-	unsigned offsets[] = { 0 };
-	ID3D11Buffer* vertBuffers[] = { *linesVertexBuffer };
-	pDeviceContext->IASetVertexBuffers(0, 1, vertBuffers, strides, offsets);
+	//unsigned strides[] = { 0 };
+	//unsigned offsets[] = { 0 };
+	//ID3D11Buffer* vertBuffers[] = { *linesVertexBuffer };
+	//pDeviceContext->IASetVertexBuffers(0, 1, vertBuffers, strides, offsets);
 	pDeviceContext->IASetInputLayout(*polyLineInputLayout);
 	pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 	pDeviceContext->RSSetViewports(1, &viewport);
 	pDeviceContext->OMSetRenderTargets(1, &*pRenderTarget, nullptr);
 	pDeviceContext->OMSetBlendState(*pBlendState, nullptr, 0xFFFFFFFF);
 
-	std::array<ID3D11Buffer*, 1> vsBuffers = {
-		*viewportCBuffer
+	std::array<ID3D11Buffer*, 2> vsBuffers = {
+		*viewportCBuffer,
+		*lineVertexConstants
 	};
 	pDeviceContext->VSSetConstantBuffers(0, vsBuffers.size(), vsBuffers.data());
 	pDeviceContext->VSSetShader(*polyLineVS, nullptr, 0);
@@ -140,8 +153,9 @@ void PolyLines::Render()
 	
 	for (unsigned n = 0; n < countof(kLines); ++n)
 	{
+		pDeviceContext->UpdateSubresource(*lineVertexConstants, 0, nullptr, &kLines[n], 0, 0);
 		pDeviceContext->UpdateSubresource(*lineParamsBuffer, 0, nullptr, &lineSets[n], 0, 0);
-		pDeviceContext->Draw(4, n);
+		pDeviceContext->Draw(4, 0);
 	}
 
 	pSwapChain->Present(1, 0);
