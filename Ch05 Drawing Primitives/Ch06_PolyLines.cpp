@@ -137,14 +137,12 @@ void PolyLines::Render()
 
 	pDeviceContext->PSSetConstantBuffers(0, 1, &*lineParamsBuffer);
 	pDeviceContext->PSSetShader(*polyLinePS, nullptr, 0);
-
-	pDeviceContext->UpdateSubresource(*lineParamsBuffer, 0, nullptr, &lineSets[0], 0, 0);
-	pDeviceContext->Draw(4, 0);
 	
-	//for (unsigned n = 0; n < countof(kLines); ++n)
-	//{
-	//	pDeviceContext->UpdateSubresource(*lineParamsBuffer, 0, nullptr, &lineSets[n], 0, 0);
-	//	pDeviceContext->Draw(4, n);
-	//}
+	for (unsigned n = 0; n < countof(kLines); ++n)
+	{
+		pDeviceContext->UpdateSubresource(*lineParamsBuffer, 0, nullptr, &lineSets[n], 0, 0);
+		pDeviceContext->Draw(4, n);
+	}
+
 	pSwapChain->Present(1, 0);
 }

@@ -34,7 +34,7 @@ struct VSOut
 VSOut main(VSIn vsIn, uint vertexId : SV_VertexID)
 {
     float2 v = vsIn.end - vsIn.begin;
-    float2 n = 5 * normalize(v.yx * float2(-1, 1));
+    float2 n = 3 * normalize(v.yx * float2(-1, 1));
     float2 ssPos = n * QuadVerts[vertexId].x + vsIn.begin;
     ssPos += v * QuadVerts[vertexId].y;
     
