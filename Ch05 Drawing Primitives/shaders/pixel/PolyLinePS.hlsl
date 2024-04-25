@@ -46,8 +46,8 @@ float4 main(PSIn psIn) : SV_Target
     
     //return float4(1, 0, 0, alpha);
     
-    float linearDistance = 5 * (1 - psIn.norm);
-    float4 output = float4(RationalFalloff(linearDistance), 0, 0, RationalFalloff(linearDistance));
+    float linearDistance = 5 * abs(psIn.norm);
+    float4 output = float4(1, 0, 0, RationalFalloff(linearDistance));
     return float4(output);
 
 }

@@ -22,6 +22,7 @@ private:
 	ComPtr<ID3D11Buffer> viewportCBuffer;
 	ComPtr<ID3D11Buffer> linesVertexBuffer;
 	ComPtr<ID3D11Buffer> lineParamsBuffer;
+	ComPtr<ID3D11BlendState> pBlendState;
 
 	double elapsedSum{ 0.f };
 	unsigned bgIndex{ 0 };

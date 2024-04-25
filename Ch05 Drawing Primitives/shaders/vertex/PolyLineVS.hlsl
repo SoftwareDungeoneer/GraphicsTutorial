@@ -7,7 +7,8 @@ cbuffer viewport : register(b0)
 
 float4 NDCFromVec2SS(float2 v)
 {
-    return float4(((2 * v) / vpDimensions) - 1, 0, 1);
+    return float4(((2 * (v + .501)) / vpDimensions) - 1, 0, 1);
+    //return float4(((2 * v) / vpDimensions) - 1, 0, 1);
 }
 
 static const float2 QuadVerts[4] =

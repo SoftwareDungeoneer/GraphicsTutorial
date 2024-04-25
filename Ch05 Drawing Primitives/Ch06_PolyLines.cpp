@@ -81,6 +81,20 @@ void PolyLines::Initialize()
 		lineSets[n].rationalPowers[0] = 1;
 		lineSets[n].rationalPowers[1] = 2;
 	}
+
+	D3D11_BLEND_DESC blendDesc;
+	ZeroInitialize(blendDesc);
+	auto& rtBlend = blendDesc.RenderTarget[0];
+	rtBlend.BlendEnable = TRUE;
+	rtBlend.SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	rtBlend.DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+	rtBlend.BlendOp = D3D11_BLEND_OP_ADD;
+	rtBlend.SrcBlendAlpha = D3D11_BLEND_ONE;
+	rtBlend.DestBlendAlpha = D3D11_BLEND_ZERO;
+	rtBlend.BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	rtBlend.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+	pDevice->CreateBlendState(&blendDesc, &*pBlendState);
+
 	enableUpdate = true;
 }
 
@@ -113,6 +127,7 @@ void PolyLines::Render()
 	pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 	pDeviceContext->RSSetViewports(1, &viewport);
 	pDeviceContext->OMSetRenderTargets(1, &*pRenderTarget, nullptr);
+	pDeviceContext->OMSetBlendState(*pBlendState, nullptr, 0xFFFFFFFF);
 
 	std::array<ID3D11Buffer*, 1> vsBuffers = {
 		*viewportCBuffer
