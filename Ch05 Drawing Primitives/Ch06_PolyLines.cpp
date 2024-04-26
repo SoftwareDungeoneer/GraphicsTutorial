@@ -19,6 +19,8 @@ struct Line {
 	{ { 50, 50 }, { 80, 50 } },
 	{ { 65, 35 }, { 65, 75 } },
 	{ { 10, 400 }, { 700, 400 } },
+	{ { 100, 100}, { 450, 350 } },
+	{ { 400, 390 }, { 750, 225 } },
 };
 
 struct LineParams {
@@ -75,7 +77,9 @@ void PolyLines::Initialize()
 	float colors[countof(kLines)][3] = {
 		{ 1, 0, 0 },
 		{ 0, 1, 0 },
-		{ 0, 0, 1 }
+		{ 0, 0, 1 },
+		{ 1, 0, 1 },
+		{ 0, 1, 1 }
 	};
 
 	for (unsigned n = 0; n < countof(kLines); ++n)
@@ -90,7 +94,7 @@ void PolyLines::Initialize()
 		lineSets[n].rationalPowers[1] = 2;
 		lineSets[n].reserved0[0] = lineSets[n].reserved0[1] = 0.f;
 		lineSets[n].reserved1 = 0;
-		for (unsigned j = 0; n < 3; ++n)
+		for (unsigned j = 0; j < 3; ++j)
 			lineSets[n].color[j] = colors[n][j];
 	}
 
@@ -112,7 +116,8 @@ void PolyLines::Initialize()
 
 void PolyLines::Update(double elapsed)
 {
-
+	if (!enableUpdate)
+		Initialize();
 }
 
 void PolyLines::Render()

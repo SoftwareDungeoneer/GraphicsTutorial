@@ -27,7 +27,7 @@ int WINAPI WinMain(
 	QueryPerformanceCounter(&qptLi);
 	double qptStartup{ qptLi.QuadPart / qptFrequency };
 
-	std::shared_ptr<RenderWindow> mainWindow = std::make_shared<PolyLines>();
+	std::shared_ptr<RenderWindow> mainWindow = std::make_shared<RenderWindow>();
 	mainWindow->Create();
 
 	LARGE_INTEGER qptLastUpdate;
@@ -46,7 +46,6 @@ int WINAPI WinMain(
 		QueryPerformanceCounter(&qptLi);
 		double interval = (qptLi.QuadPart - qptLastUpdate.QuadPart) / qptFrequency;
 		mainWindow->Update(interval);
-		mainWindow->Render();
 		qptLastUpdate = qptLi;
 	}
 

@@ -6,9 +6,11 @@
 #include <d3d11.h>
 #include <dxgi.h>
 
-#include "ComPtr.h"
+#include <memory>
+#include <vector>
 
-#include "Vec2.h"
+#include "ToolWindow.h"
+#include "Renderer.h"
 
 class RenderWindow
 {
@@ -18,21 +20,14 @@ public:
 
 	HRESULT Create();
 
-	virtual void Update(double elapsed) = 0;
-	virtual void Render() = 0;
+	void Update(double interval);
 
 protected:
 	HWND hWnd{ 0 };
 	unsigned windowWidth{ 0 };
 	unsigned windowHeight{ 0 };
 
-	bool enableUpdate{ false };
-
-	ComPtr<ID3D11Device> pDevice;
-	ComPtr<ID3D11DeviceContext> pDeviceContext;
-	ComPtr<IDXGISwapChain> pSwapChain;
-
-	D3D11_VIEWPORT ViewportFromTexture(ComPtr<ID3D11Texture2D>& tex);
+	std::shared_ptr<Renderer> activeRenderer;
 
 private:
 	RenderWindow(RenderWindow&&) = delete;
@@ -42,9 +37,6 @@ private:
 
 	void RegisterWindowClass();
 	HRESULT CreateUIWindow();
-	void CreateD3DDevice();
-
-	virtual void Initialize() = 0;
 
 	static LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM, LPARAM);
 	LRESULT OnCreate();

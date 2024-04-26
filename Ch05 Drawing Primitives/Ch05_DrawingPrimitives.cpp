@@ -84,7 +84,7 @@ void DrawingPrimitives::Initialize() {
 
 void DrawingPrimitives::Update(double elapsed) {
 	if (!enableUpdate)
-		return;
+		Initialize();
 
 	//instanceData.angle += .5f * elapsed;
 	

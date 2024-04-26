@@ -1,9 +1,9 @@
-#include "RenderWindow.h"
+#include "Renderer.h"
 
 #include <d3d11.h>
 #include "ComPtr.h"
 
-class PolyLines : public RenderWindow
+class PolyLines : public Renderer
 {
 	virtual void Update(double elapsed);
 	virtual void Render();

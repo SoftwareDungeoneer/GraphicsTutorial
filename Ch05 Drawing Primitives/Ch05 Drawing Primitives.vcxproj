@@ -146,6 +146,7 @@
     <ClCompile Include="Ch07_Textures.cpp" />
     <ClCompile Include="Image.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="RenderWindow.cpp" />
     <ClCompile Include="util.cpp" />
     <ClCompile Include="Vec2.cpp" />
@@ -156,6 +157,7 @@
     <ClInclude Include="Ch07_Textures.h" />
     <ClInclude Include="ComPtr.h" />
     <ClInclude Include="Image.h" />
+    <ClInclude Include="Renderer.h" />
     <ClInclude Include="RenderWindow.h" />
     <ClInclude Include="util.h" />
     <ClInclude Include="Vec2.h" />

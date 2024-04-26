@@ -2,12 +2,15 @@
 #define CH05_DRAWING_PRIMITIVES_H
 #pragma once
 
-#include "RenderWindow.h"
+#include "Renderer.h"
 
 #include <d3d11.h>
+
 #include "ComPtr.h"
 
-class DrawingPrimitives : public RenderWindow
+#include "Vec2.h"
+
+class DrawingPrimitives : public Renderer
 {
 	virtual void Update(double elapsed);
 	virtual void Render();
