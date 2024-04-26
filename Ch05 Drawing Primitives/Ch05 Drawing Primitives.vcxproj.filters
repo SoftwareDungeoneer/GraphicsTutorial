@@ -35,6 +35,9 @@
     <ClCompile Include="RenderWindow.cpp">
       <Filter>Windows</Filter>
     </ClCompile>
+    <ClCompile Include="ToolWindow.cpp">
+      <Filter>Windows</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ComPtr.h">
@@ -54,6 +57,9 @@
       <Filter>RendererBase</Filter>
     </ClInclude>
     <ClInclude Include="RenderWindow.h">
+      <Filter>Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="ToolWindow.h">
       <Filter>Windows</Filter>
     </ClInclude>
   </ItemGroup>

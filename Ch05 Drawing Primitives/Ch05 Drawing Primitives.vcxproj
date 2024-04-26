@@ -148,6 +148,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="RenderWindow.cpp" />
+    <ClCompile Include="ToolWindow.cpp" />
     <ClCompile Include="util.cpp" />
     <ClCompile Include="Vec2.cpp" />
   </ItemGroup>
@@ -159,6 +160,7 @@
     <ClInclude Include="Image.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="RenderWindow.h" />
+    <ClInclude Include="ToolWindow.h" />
     <ClInclude Include="util.h" />
     <ClInclude Include="Vec2.h" />
   </ItemGroup>

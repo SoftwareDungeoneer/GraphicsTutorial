@@ -22,12 +22,25 @@ public:
 
 	void Update(double interval);
 
+	enum class Demos : unsigned {
+		FirstTriangle,
+		MovingTriangles,
+		DrawingPrimitives,
+		PolyLines,
+		Textures,
+
+		COUNT
+	};
+
+	void SetDemo(Demos);
+
 protected:
 	HWND hWnd{ 0 };
 	unsigned windowWidth{ 0 };
 	unsigned windowHeight{ 0 };
 
 	std::shared_ptr<Renderer> activeRenderer;
+	std::shared_ptr<ToolWindow> toolWindow{ nullptr };
 
 private:
 	RenderWindow(RenderWindow&&) = delete;
