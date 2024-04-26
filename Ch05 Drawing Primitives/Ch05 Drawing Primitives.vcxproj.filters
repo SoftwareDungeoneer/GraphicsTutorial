@@ -38,6 +38,8 @@
     <ClCompile Include="ToolWindow.cpp">
       <Filter>Windows</Filter>
     </ClCompile>
+    <ClCompile Include="Ch03_FirstTriangle.cpp" />
+    <ClCompile Include="Ch04_MovingTriangles.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ComPtr.h">
@@ -62,6 +64,8 @@
     <ClInclude Include="ToolWindow.h">
       <Filter>Windows</Filter>
     </ClInclude>
+    <ClInclude Include="Ch03_FirstTriangle.h" />
+    <ClInclude Include="Ch04_MovingTriangles.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Shaders">

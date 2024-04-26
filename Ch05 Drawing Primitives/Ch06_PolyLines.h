@@ -5,6 +5,9 @@
 
 class PolyLines : public Renderer
 {
+public:
+	PolyLines(HWND h) : Renderer(h) {}
+
 	virtual void Update(double elapsed);
 	virtual void Render();
 

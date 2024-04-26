@@ -12,6 +12,9 @@
 
 class DrawingPrimitives : public Renderer
 {
+public:
+	DrawingPrimitives(HWND h) : Renderer(h) {}
+
 	virtual void Update(double elapsed);
 	virtual void Render();
 

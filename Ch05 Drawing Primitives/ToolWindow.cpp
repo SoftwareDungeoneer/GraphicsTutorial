@@ -245,7 +245,7 @@ LRESULT ToolWindow::OnCommand(WPARAM wParam, LPARAM lParam)
 		break;
 	}
 
-	return DefWndowProc(hWnd, WM_COMMAND, wParam, lParam);
+	return DefWindowProc(hWnd, WM_COMMAND, wParam, lParam);
 }
 
 LRESULT ToolWindow::OnDemoSelector(unsigned command)

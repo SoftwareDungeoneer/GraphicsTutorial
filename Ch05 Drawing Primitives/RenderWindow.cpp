@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "Renderer.h"
+#include "Ch03_FirstTriangle.h"
+#include "Ch04_MovingTriangles.h"
 #include "Ch05_DrawingPrimitives.h"
 #include "Ch06_PolyLines.h"
 #include "Ch07_Textures.h"
@@ -95,8 +97,8 @@ void RenderWindow::SetDemo(Demos demo)
 	using PtrT = std::shared_ptr<Renderer>; 
 	struct Thunk { void (*fn)(PtrT&, HWND); };
 	constexpr Thunk thunks[static_cast<size_t>(Demos::COUNT)] = {
-		{ [](PtrT& ptr, HWND h) -> void { ptr = std::make_shared<Renderer>(h); } },
-		{ [](PtrT& ptr, HWND h) -> void { ptr = std::make_shared<Renderer>(h); } },
+		{ [](PtrT& ptr, HWND h) -> void { ptr = std::make_shared<FirstTriangle>(h); } },
+		{ [](PtrT& ptr, HWND h) -> void { ptr = std::make_shared<MovingTriangles>(h); } },
 		{ [](PtrT& ptr, HWND h) -> void { ptr = std::make_shared<DrawingPrimitives>(h); } },
 		{ [](PtrT& ptr, HWND h) -> void { ptr = std::make_shared<PolyLines>(h); } },
 		{ [](PtrT& ptr, HWND h) -> void { ptr = std::make_shared<DrawingPrimitives>(h); } },

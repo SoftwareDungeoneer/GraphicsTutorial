@@ -141,6 +141,8 @@
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Ch03_FirstTriangle.cpp" />
+    <ClCompile Include="Ch04_MovingTriangles.cpp" />
     <ClCompile Include="Ch05_DrawingPrimitives.cpp" />
     <ClCompile Include="Ch06_PolyLines.cpp" />
     <ClCompile Include="Ch07_Textures.cpp" />
@@ -153,6 +155,8 @@
     <ClCompile Include="Vec2.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Ch03_FirstTriangle.h" />
+    <ClInclude Include="Ch04_MovingTriangles.h" />
     <ClInclude Include="Ch05_DrawingPrimitives.h" />
     <ClInclude Include="Ch06_PolyLines.h" />
     <ClInclude Include="Ch07_Textures.h" />
