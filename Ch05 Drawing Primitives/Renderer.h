@@ -14,6 +14,7 @@ class Renderer
 {
 public:
 	Renderer(HWND);
+	~Renderer();
 
 	void Resize(unsigned cx, unsigned cy);
 

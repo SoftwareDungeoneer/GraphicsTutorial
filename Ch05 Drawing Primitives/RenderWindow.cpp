@@ -103,7 +103,11 @@ void RenderWindow::SetDemo(Demos demo)
 		{ [](PtrT& ptr, HWND h) -> void { ptr = std::make_shared<PolyLines>(h); } },
 		{ [](PtrT& ptr, HWND h) -> void { ptr = std::make_shared<DrawingPrimitives>(h); } },
 	};
-	thunks[static_cast<unsigned>(demo)].fn(activeRenderer, hWnd);
+	if (demo < Demos::COUNT)
+	{
+		activeRenderer.reset();
+		thunks[static_cast<unsigned>(demo)].fn(activeRenderer, hWnd);
+	}
 }
 
 LRESULT CALLBACK RenderWindow::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)

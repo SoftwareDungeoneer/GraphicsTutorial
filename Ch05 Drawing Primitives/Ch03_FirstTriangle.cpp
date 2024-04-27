@@ -77,12 +77,13 @@ void FirstTriangle::Initialize()
 		0, // Not a structured buffer
 	};
 	pDevice->CreateBuffer(&cbufferDesc, nullptr, &*vsConstants);
+	enableUpdate = true;
 }
 
 void FirstTriangle::Update(double elapsed)
 {
 	if (!enableUpdate)
-		return;
+		Initialize();
 
 	elapsedInterval += elapsed;
 	if (elapsedInterval < 0.2)
@@ -96,6 +97,9 @@ void FirstTriangle::Update(double elapsed)
 
 void FirstTriangle::Render()
 {
+	if (!enableUpdate)
+		return;
+
 	ComPtr<ID3D11Texture2D> pBackBuffer;
 	ComPtr<ID3D11RenderTargetView> pRenderTarget;
 

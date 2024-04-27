@@ -89,5 +89,13 @@
     <Filter Include="Windows">
       <UniqueIdentifier>{1b1047e9-183f-471e-815c-1b09ef8c0077}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Assets">
+      <UniqueIdentifier>{1829e50a-8f90-4413-95e5-45addf9a299b}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="WhiteStarOnGreen.png">
+      <Filter>Assets</Filter>
+    </Image>
   </ItemGroup>
 </Project>

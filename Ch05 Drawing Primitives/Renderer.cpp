@@ -9,6 +9,12 @@ Renderer::Renderer(HWND _hWnd):hWnd(_hWnd)
 	CreateD3DDevice();
 }
 
+Renderer::~Renderer()
+{
+	pDeviceContext->ClearState();
+	pDeviceContext->Flush();
+}
+
 void Renderer::Resize(unsigned cx, unsigned cy)
 {
 	windowWidth = cx;
