@@ -26,6 +26,7 @@ private:
 	ComPtr<ID3D11Buffer> vertexBuffer;
 	ComPtr<ID3D11Texture2D> texture;
 
+public:
 	struct Vertex
 	{
 		float Pos2D[2]{ 0, 0 };

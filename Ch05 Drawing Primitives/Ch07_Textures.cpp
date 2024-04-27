@@ -12,6 +12,17 @@ const D3D11_INPUT_ELEMENT_DESC Textures::Vertex::desc[]
 	{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0}
 };
 
+// Note that while we're specifying our vertex positions in an arbitrary
+// window space with (0,0) at the lower right, we're specifying our
+// texel coords in normalized uv space, with (0,0) at the upper left
+// and (1,1) at the loewr right.
+const Textures::Vertex QuadVertices[] = {
+	{ { 400 - 128, 300 + 128 }, { 0, 0 } }, // Upper left
+	{ { 400 + 128, 300 + 128 }, { 1, 0 } }, // Upper right
+	{ { 400 - 128, 300 - 128 }, { 0, 1 } }, // Lower left
+	{ { 400 + 128, 300 - 128 }, { 1, 1 } }  // Lower right
+};
+
 void Textures::Initialize()
 {
 	auto vsBytes = LoadFile(_T("TexturedQuad.vsc"));
