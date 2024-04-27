@@ -101,7 +101,7 @@ void RenderWindow::SetDemo(Demos demo)
 		{ [](PtrT& ptr, HWND h) -> void { ptr = std::make_shared<MovingTriangles>(h); } },
 		{ [](PtrT& ptr, HWND h) -> void { ptr = std::make_shared<DrawingPrimitives>(h); } },
 		{ [](PtrT& ptr, HWND h) -> void { ptr = std::make_shared<PolyLines>(h); } },
-		{ [](PtrT& ptr, HWND h) -> void { ptr = std::make_shared<DrawingPrimitives>(h); } },
+		{ [](PtrT& ptr, HWND h) -> void { ptr = std::make_shared<Textures>(h); } },
 	};
 	if (demo < Demos::COUNT)
 	{

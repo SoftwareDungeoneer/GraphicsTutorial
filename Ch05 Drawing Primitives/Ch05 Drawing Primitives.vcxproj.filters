@@ -16,6 +16,12 @@
     <FxCompile Include="shaders\vertex\PolyLineVS.hlsl">
       <Filter>Shaders\Vertex</Filter>
     </FxCompile>
+    <FxCompile Include="TexturedQuad.ps">
+      <Filter>Shaders\Pixel</Filter>
+    </FxCompile>
+    <FxCompile Include="TexturedQuad.vs">
+      <Filter>Shaders\Vertex</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -28,7 +34,6 @@
       <Filter>Utility</Filter>
     </ClCompile>
     <ClCompile Include="Ch07_Textures.cpp" />
-    <ClCompile Include="Image.cpp" />
     <ClCompile Include="Renderer.cpp">
       <Filter>RendererBase</Filter>
     </ClCompile>
@@ -40,6 +45,9 @@
     </ClCompile>
     <ClCompile Include="Ch03_FirstTriangle.cpp" />
     <ClCompile Include="Ch04_MovingTriangles.cpp" />
+    <ClCompile Include="Image.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ComPtr.h">
@@ -54,7 +62,6 @@
       <Filter>Utility</Filter>
     </ClInclude>
     <ClInclude Include="Ch07_Textures.h" />
-    <ClInclude Include="Image.h" />
     <ClInclude Include="Renderer.h">
       <Filter>RendererBase</Filter>
     </ClInclude>
@@ -66,6 +73,9 @@
     </ClInclude>
     <ClInclude Include="Ch03_FirstTriangle.h" />
     <ClInclude Include="Ch04_MovingTriangles.h" />
+    <ClInclude Include="Image.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Shaders">
