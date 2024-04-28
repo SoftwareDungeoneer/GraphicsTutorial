@@ -1,3 +1,6 @@
+Texture2D colorTexture : register(t0);
+SamplerState colorSampler : register(s0);
+
 struct PSIn
 {
     float4 position : SV_Position;
@@ -6,5 +9,6 @@ struct PSIn
 
 float4 main(PSIn psIn) : SV_Target
 {
-    return float4(1, 0, 0, 1);
+    float4 color = colorTexture.Sample(colorSampler, psIn.tex);
+    return color;
 }

@@ -31,6 +31,8 @@ private:
 	ComPtr<ID3D11Buffer> vertexBuffer;
 	ComPtr<ID3D11Buffer> viewportConstantBuffer;
 	ComPtr<ID3D11Texture2D> texture;
+	ComPtr<ID3D11ShaderResourceView> textureSRV;
+	ComPtr<ID3D11SamplerState> samplerState;
 
 public:
 	struct Vertex

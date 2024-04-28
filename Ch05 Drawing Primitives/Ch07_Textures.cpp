@@ -61,6 +61,40 @@ void Textures::Initialize()
 	
 	pDevice->CreateBuffer(&bufferDesc, nullptr, &*viewportConstantBuffer);
 
+	D3D11_TEXTURE2D_DESC texDesc;
+	ZeroInitialize(texDesc);
+	texDesc.Width = starImage->Width();
+	texDesc.Height = starImage->Height();
+	texDesc.ArraySize = 1;
+	texDesc.MipLevels = 1;
+	texDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	texDesc.SampleDesc.Count = 1;
+	texDesc.Usage = D3D11_USAGE_IMMUTABLE;
+	texDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	
+	srd.pSysMem = imageBytes.data();
+	srd.SysMemPitch = starImage->Width() * 4;
+	pDevice->CreateTexture2D(&texDesc, &srd, &*texture);
+
+	D3D11_SAMPLER_DESC samplerDesc;
+	ZeroInitialize(samplerDesc);
+	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+	samplerDesc.MipLODBias = 0.f;
+	pDevice->CreateSamplerState(&samplerDesc, &*samplerState);
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
+	ZeroInitialize(srvDesc);
+	srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	D3D11_TEX2D_SRV& t2srv = srvDesc.Texture2D;
+	t2srv.MipLevels = 1;
+	t2srv.MostDetailedMip = 0;
+
+	pDevice->CreateShaderResourceView(*texture, &srvDesc, &*textureSRV);
+
 	enableUpdate = true;
 }
 
@@ -93,7 +127,7 @@ void Textures::Render()
 	memcpy(mappedResource.pData, &viewport, sizeof(D3D11_VIEWPORT));
 	pDeviceContext->Unmap(*viewportConstantBuffer, 0);
 
-	unsigned strides[]{ 0 };
+	unsigned strides[]{ sizeof(Textures::Vertex)};
 	unsigned offsets[]{ 0 };
 	pDeviceContext->IASetVertexBuffers(0, 1, vertexBuffers.data(), strides, offsets);
 	pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
@@ -106,6 +140,8 @@ void Textures::Render()
 	pDeviceContext->VSSetShader(*vertexShader, nullptr, 0);
 
 	pDeviceContext->PSSetShader(*pixelShader, nullptr, 0);
+	pDeviceContext->PSSetShaderResources(0, 1, &*textureSRV);
+	pDeviceContext->PSSetSamplers(0, 1, &*samplerState);
 
 	pDeviceContext->Draw(4, 0);
 
