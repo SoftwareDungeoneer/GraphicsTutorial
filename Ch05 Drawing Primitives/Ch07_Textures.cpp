@@ -25,6 +25,10 @@ const Textures::Vertex QuadVertices[] = {
 
 void Textures::Initialize()
 {
+	starImage = std::make_unique<Image>();
+	starImage->Load(_T("WhiteStarOnGreen.png"));
+	auto imageBytes = starImage->GetFrameData(0);
+
 	auto vsBytes = LoadFile(_T("TexturedQuad.vsc"));
 	auto psBytes = LoadFile(_T("TexturedQuad.psc"));
 	pDevice->CreateVertexShader(vsBytes.data(), vsBytes.size(), nullptr, &*vertexShader);
@@ -37,6 +41,25 @@ void Textures::Initialize()
 		vsBytes.size(),
 		&*inputLayout
 	);
+
+	D3D11_BUFFER_DESC bufferDesc;
+	ZeroInitialize(bufferDesc);
+	bufferDesc.ByteWidth = sizeof(QuadVertices);
+	bufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
+	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+
+	D3D11_SUBRESOURCE_DATA srd;
+	ZeroInitialize(srd);
+	srd.pSysMem = QuadVertices;
+
+	pDevice->CreateBuffer(&bufferDesc, &srd, &*vertexBuffer);
+
+	bufferDesc.ByteWidth = aligned_size_16<D3D11_VIEWPORT>;
+	bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	
+	pDevice->CreateBuffer(&bufferDesc, nullptr, &*viewportConstantBuffer);
 
 	enableUpdate = true;
 }
@@ -65,11 +88,26 @@ void Textures::Render()
 	std::array<ID3D11Buffer*, 1> vertexBuffers{
 		*vertexBuffer,
 	};
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	pDeviceContext->Map(*viewportConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	memcpy(mappedResource.pData, &viewport, sizeof(D3D11_VIEWPORT));
+	pDeviceContext->Unmap(*viewportConstantBuffer, 0);
+
 	unsigned strides[]{ 0 };
 	unsigned offsets[]{ 0 };
 	pDeviceContext->IASetVertexBuffers(0, 1, vertexBuffers.data(), strides, offsets);
 	pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 	pDeviceContext->IASetInputLayout(*inputLayout);
+
+	pDeviceContext->RSSetViewports(1, &viewport);
+	pDeviceContext->OMSetRenderTargets(1, &*pRenderTarget, nullptr);
+
+	pDeviceContext->VSSetConstantBuffers(0, 1, &*viewportConstantBuffer);
+	pDeviceContext->VSSetShader(*vertexShader, nullptr, 0);
+
+	pDeviceContext->PSSetShader(*pixelShader, nullptr, 0);
+
+	pDeviceContext->Draw(4, 0);
 
 	pSwapChain->Present(1, 0);
 }

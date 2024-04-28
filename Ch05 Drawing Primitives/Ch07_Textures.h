@@ -5,7 +5,10 @@
 
 #include <d3d11.h>
 
+#include <memory>
+
 #include "ComPtr.h"
+#include "Image.h"
 
 class Textures : public Renderer
 {
@@ -19,11 +22,14 @@ protected:
 	virtual void Initialize();
 
 private:
+	std::unique_ptr<Image> starImage;
+
 	ComPtr<ID3D11VertexShader> vertexShader;
 	ComPtr<ID3D11PixelShader> pixelShader;
 
 	ComPtr<ID3D11InputLayout> inputLayout;
 	ComPtr<ID3D11Buffer> vertexBuffer;
+	ComPtr<ID3D11Buffer> viewportConstantBuffer;
 	ComPtr<ID3D11Texture2D> texture;
 
 public:

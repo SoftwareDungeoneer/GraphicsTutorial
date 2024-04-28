@@ -7,7 +7,7 @@ cbuffer viewport : register(b0)
 
 struct VSIn
 {
-	float2 pos : POSITIONT;
+	float2 pos : POSITION;
 	float2 tex : TEXCOORD;
 };
 
