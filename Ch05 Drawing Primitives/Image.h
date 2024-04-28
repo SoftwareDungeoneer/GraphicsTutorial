@@ -3,35 +3,44 @@
 #pragma once
 
 #include <Windows.h>
+#include <Wincodec.h>
+#pragma comment(lib, "Windowscodecs.lib")
+
+#include "ComPtr.h"
+
 #include <vector>
 
 class Image
 {
 public:
-	enum class Formats {
+	enum class Format {
 		RGBA8,
 		BGRA8,
-		RGBA_FLOAT
+		RGBA_FLOAT,
+
+		COUNT
 	};
 
-	Image(
-		unsigned cx,
-		unsigned cy,
-		Formats fmt = Formats::RGBA8,
-		unsigned dataLen = 0,
-		char* initialData = nullptr
-	);
+	HRESULT Load(LPCTSTR filename);
 
-	unsigned Width() { return width; }
-	unsigned Height() {	return height; }
+	unsigned Width();
+	unsigned Height();
+	unsigned FrameCount();
+	HRESULT SelectFrame(unsigned frameIdx);
 
-	static Image LoadFromFile(LPCTSTR filename, Formats fmt = Formats::RGBA8);
+	HRESULT ConvertFrame(BYTE* pOut, UINT bufferSize, unsigned frame, Format fmt = Format::RGBA8);
+	std::vector<BYTE> GetFrameData(unsigned frame, Format fmt = Format::RGBA8);
+
 
 private:
-	std::vector<char> data;
+	ComPtr<IWICImagingFactory> pFactory;
+	ComPtr<IWICBitmapDecoder> pDecoder;
+	ComPtr<IWICBitmapFrameDecode> pFrame;
 
-	unsigned width;
-	unsigned height;
+	unsigned frameCount{ 0 };
+	unsigned selectedFrame{ 0 };
+
+	HRESULT CreateNewFactory();
 };
 
 #endif // GRAPHICS_TUTORIAL_IMAGE_H
