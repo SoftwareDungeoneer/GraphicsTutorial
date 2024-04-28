@@ -49,5 +49,6 @@ int WINAPI WinMain(
 		qptLastUpdate = qptLi;
 	}
 
+	mainWindow.reset();
 	CoUninitialize();
 }
