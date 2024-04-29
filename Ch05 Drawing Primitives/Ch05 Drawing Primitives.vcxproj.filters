@@ -22,6 +22,9 @@
     <FxCompile Include="TexturedQuad.vs">
       <Filter>Shaders\Vertex</Filter>
     </FxCompile>
+    <FxCompile Include="FirstTri.vs">
+      <Filter>Shaders\Vertex</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />

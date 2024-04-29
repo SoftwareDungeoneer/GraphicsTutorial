@@ -171,6 +171,9 @@ LRESULT ToolWindow::OnCreate()
 			SendMessage(hDemoSelector, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(DemoStrings[n]));
 		}
 		SendMessage(hDemoSelector, CB_SETCURSEL, 0, 0);
+
+		if (pRenderWindow)
+			pRenderWindow->SetDemo(static_cast<RenderWindow::Demos>(0));
 	}
 	return 0;
 }

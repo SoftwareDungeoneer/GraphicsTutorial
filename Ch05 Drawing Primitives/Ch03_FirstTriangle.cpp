@@ -32,7 +32,7 @@ namespace
 
 void FirstTriangle::Initialize()
 {
-	auto vsBytes = LoadFile(_T("ClientToNdc.cso"));
+	auto vsBytes = LoadFile(_T("FirstTri.vsc"));
 	auto psBytes = LoadFile(_T("SolidFill.cso"));
 
 	pDevice->CreateVertexShader(vsBytes.data(), vsBytes.size(), nullptr, &*vertexShader);
@@ -70,9 +70,9 @@ void FirstTriangle::Initialize()
 
 	constexpr D3D11_BUFFER_DESC cbufferDesc{
 		sizeof(vscbuffer),
-		D3D11_USAGE_DYNAMIC,
+		D3D11_USAGE_DEFAULT,
 		D3D11_BIND_CONSTANT_BUFFER,
-		D3D11_CPU_ACCESS_WRITE,
+		0,
 		0, // No Misc flags
 		0, // Not a structured buffer
 	};
