@@ -146,6 +146,8 @@
     <ClCompile Include="Ch05_DrawingPrimitives.cpp" />
     <ClCompile Include="Ch06_PolyLines.cpp" />
     <ClCompile Include="Ch07_Textures.cpp" />
+    <ClCompile Include="Ch08_FontAtlas.cpp" />
+    <ClCompile Include="FontLoader.cpp" />
     <ClCompile Include="Image.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Renderer.cpp" />
@@ -160,7 +162,9 @@
     <ClInclude Include="Ch05_DrawingPrimitives.h" />
     <ClInclude Include="Ch06_PolyLines.h" />
     <ClInclude Include="Ch07_Textures.h" />
+    <ClInclude Include="Ch08_FontAtlas.h" />
     <ClInclude Include="ComPtr.h" />
+    <ClInclude Include="FontLoader.h" />
     <ClInclude Include="Image.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="RenderWindow.h" />

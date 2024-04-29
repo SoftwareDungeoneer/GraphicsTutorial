@@ -24,6 +24,7 @@ const std::array<LPCTSTR, static_cast<size_t>(RenderWindow::Demos::COUNT)> DemoS
 	_T("Drawing Primitives"),
 	_T("Antialiased Lines"),
 	_T("Textured Quad"),
+	_T("Font Atlas")
 };
 
 ToolWindow::ToolWindow(RenderWindow* rw):pRenderWindow(rw)

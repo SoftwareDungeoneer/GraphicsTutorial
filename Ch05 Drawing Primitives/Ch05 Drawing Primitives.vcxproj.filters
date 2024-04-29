@@ -51,6 +51,10 @@
     <ClCompile Include="Image.cpp">
       <Filter>Utility</Filter>
     </ClCompile>
+    <ClCompile Include="Ch08_FontAtlas.cpp" />
+    <ClCompile Include="FontLoader.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ComPtr.h">
@@ -77,6 +81,10 @@
     <ClInclude Include="Ch03_FirstTriangle.h" />
     <ClInclude Include="Ch04_MovingTriangles.h" />
     <ClInclude Include="Image.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Ch08_FontAtlas.h" />
+    <ClInclude Include="FontLoader.h">
       <Filter>Utility</Filter>
     </ClInclude>
   </ItemGroup>

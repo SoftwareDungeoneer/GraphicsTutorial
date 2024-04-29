@@ -28,6 +28,7 @@ public:
 		DrawingPrimitives,
 		PolyLines,
 		Textures,
+		FontAtlas,
 
 		COUNT
 	};
