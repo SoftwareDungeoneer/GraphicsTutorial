@@ -13,6 +13,13 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Ch04 Moving Triangles", "Ch
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Ch05 Drawing Primitives", "Ch05 Drawing Primitives\Ch05 Drawing Primitives.vcxproj", "{359DB475-6FEA-4E98-8B1D-78C9EF732BC8}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GDIFontDemo", "GDIFontDemo\GDIFontDemo.vcxproj", "{1C08D59D-0042-4733-9E53-7EABDAE1CF91}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A8D42172-20E6-430E-AB6D-49ACA6217BA4}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -61,6 +68,14 @@ Global
 		{359DB475-6FEA-4E98-8B1D-78C9EF732BC8}.Release|x64.Build.0 = Release|x64
 		{359DB475-6FEA-4E98-8B1D-78C9EF732BC8}.Release|x86.ActiveCfg = Release|Win32
 		{359DB475-6FEA-4E98-8B1D-78C9EF732BC8}.Release|x86.Build.0 = Release|Win32
+		{1C08D59D-0042-4733-9E53-7EABDAE1CF91}.Debug|x64.ActiveCfg = Debug|x64
+		{1C08D59D-0042-4733-9E53-7EABDAE1CF91}.Debug|x64.Build.0 = Debug|x64
+		{1C08D59D-0042-4733-9E53-7EABDAE1CF91}.Debug|x86.ActiveCfg = Debug|Win32
+		{1C08D59D-0042-4733-9E53-7EABDAE1CF91}.Debug|x86.Build.0 = Debug|Win32
+		{1C08D59D-0042-4733-9E53-7EABDAE1CF91}.Release|x64.ActiveCfg = Release|x64
+		{1C08D59D-0042-4733-9E53-7EABDAE1CF91}.Release|x64.Build.0 = Release|x64
+		{1C08D59D-0042-4733-9E53-7EABDAE1CF91}.Release|x86.ActiveCfg = Release|Win32
+		{1C08D59D-0042-4733-9E53-7EABDAE1CF91}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
