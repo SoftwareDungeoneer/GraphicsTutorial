@@ -6,12 +6,14 @@
 #include <map>
 #include <vector>
 
+#include "util.h"
+
 struct FontData
 {
 	TEXTMETRIC tm;
 	BITMAPINFO bitmapInfo;
 	std::vector<BYTE> DIBits;
-	std::map<TCHAR, RECT> glyphQuads;
+	std::map<TCHAR, RECTF> glyphQuads;
 };
 
 namespace FontLoader

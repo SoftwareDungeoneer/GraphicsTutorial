@@ -2,6 +2,8 @@
 
 #include <tchar.h>
 
+#include "util.h"
+
 namespace
 {
 	LPCTSTR kGlyphChars =
@@ -36,8 +38,8 @@ FontData FontLoader::LoadFont(LPCTSTR facename, int height)
 		{
 			return {};
 		}
+		DeleteDC(hdc);
 	}
-	DeleteDC(hdc);
 
 	return ConvertFontToAtlas(hFont);
 
@@ -80,10 +82,11 @@ FontData FontLoader::ConvertFontToAtlas(HFONT hFont)
 					if (r.bottom >= cxcy)
 					{
 						succeeded = false;
+						cxcy <<= 1;
 						break;
 					}
 				}
-				out.glyphQuads[kGlyphChars[n]] = r;
+				out.glyphQuads[kGlyphChars[n]] = RectfFromRect(r);
 				left += size.cx;
 			}
 		}

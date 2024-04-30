@@ -27,4 +27,18 @@ void ZeroInitialize(T& t) noexcept {
 
 std::vector<BYTE> LoadFile(LPCTSTR filename);
 
+struct RECTF {
+	float left, top, right, bottom;
+};
+
+inline RECTF RectfFromRect(const RECT& r)
+{
+	return { 
+		1.f * r.left,
+		1.f * r.top,
+		1.f * r.right,
+		1.f * r.bottom 
+	};
+}
+
 #endif // GRAPHICS_TUTORIAL_UTIL_H

@@ -5,7 +5,9 @@
 
 #include <d3d11.h>
 
+#include <array>
 #include <memory>
+#include <vector>
 
 #include "ComPtr.h"
 #include "Image.h"
@@ -19,6 +21,13 @@ public:
 	virtual void Update(double elapsed);
 	virtual void Render();
 
+	struct Vertex
+	{
+		float Pos2D[2]{ 0, 0 };
+		float Texcoord[2]{ 0, 0 };
+
+		static const D3D11_INPUT_ELEMENT_DESC desc[];
+	};
 protected:
 	virtual void Initialize();
 
@@ -26,6 +35,8 @@ private:
 	FontData fontData;
 	ComPtr<ID3D11Texture2D> fontAtlas;
 	ComPtr<ID3D11ShaderResourceView> fontAtlasSRV;
+	ComPtr<ID3D11Texture2D> fontAtlasGrayscale;
+	ComPtr<ID3D11ShaderResourceView> fontAtlasGrayscaleSRV;
 
 	std::unique_ptr<Image> starImage;
 
@@ -39,16 +50,12 @@ private:
 	ComPtr<ID3D11ShaderResourceView> textureSRV;
 	ComPtr<ID3D11SamplerState> samplerState;
 
-	void RemapFontBits();
+	void LoadShaders();
+	void CreateFontTextures();
+	void RescaleFontUVs();
+	std::vector<BYTE> RemapFontBits();
 
-public:
-	struct Vertex
-	{
-		float Pos2D[2]{ 0, 0 };
-		float Texcoord[2]{ 0, 0 };
-
-		static const D3D11_INPUT_ELEMENT_DESC desc[];
-	};
+	std::array<Vertex, 4> WorldRectToVertices(RECT r);
 };
 
 #endif // GRAPHICS_TUTORIAL_CH07_FONT_ATLAS_H

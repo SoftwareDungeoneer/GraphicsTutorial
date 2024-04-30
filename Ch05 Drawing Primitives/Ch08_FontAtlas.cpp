@@ -2,6 +2,7 @@
 
 #include <tchar.h>
 
+#include <algorithm>
 #include <array>
 
 #include "util.h"
@@ -23,20 +24,8 @@ const FontAtlas::Vertex QuadVertices[] = {
 	{ { 400 + 128, 300 - 128 }, { 1, 1 } }  // Lower right
 };
 
-void FontAtlas::RemapFontBits()
+void FontAtlas::LoadShaders()
 {
-	std::vector<BYTE> vb;
-}
-
-void FontAtlas::Initialize()
-{
-	fontData = FontLoader::LoadFont(_T("Calibri"), 19);
-
-	
-	starImage = std::make_unique<Image>();
-	starImage->Load(_T("WhiteStarOnGreen.png"));
-	auto imageBytes = starImage->GetFrameData(0);
-
 	auto vsBytes = LoadFile(_T("TexturedQuad.vsc"));
 	auto psBytes = LoadFile(_T("TexturedQuad.psc"));
 	pDevice->CreateVertexShader(vsBytes.data(), vsBytes.size(), nullptr, &*vertexShader);
@@ -49,6 +38,51 @@ void FontAtlas::Initialize()
 		vsBytes.size(),
 		&*inputLayout
 	);
+}
+
+void FontAtlas::CreateFontTextures()
+{
+
+}
+
+void FontAtlas::RescaleFontUVs()
+{
+	float cx = 1.f * fontData.bitmapInfo.bmiHeader.biWidth;
+	float cy = 1.f * fontData.bitmapInfo.bmiHeader.biHeight;
+
+	std::transform(
+		fontData.glyphQuads.begin(),
+		fontData.glyphQuads.end(),
+		fontData.glyphQuads.begin(),
+		[cx, cy](const auto& p) {
+			const auto& [c, r] = p;
+			RECTF rf{ r.left / cx, r.top / cy, r.right / cx, r.bottom / cy };
+			return std::make_pair(c, rf);
+		}
+	);
+}
+
+std::vector<BYTE> FontAtlas::RemapFontBits()
+{
+	std::vector<BYTE> vb;
+
+	return vb;
+}
+
+
+void FontAtlas::Initialize()
+{
+	LoadShaders();
+
+	fontData = FontLoader::LoadFont(_T("Calibri"), 19);
+	CreateFontTextures();
+	RescaleFontUVs();
+
+	starImage = std::make_unique<Image>();
+	starImage->Load(_T("WhiteStarOnGreen.png"));
+	auto imageBytes = starImage->GetFrameData(0);
+
+
 
 	D3D11_BUFFER_DESC bufferDesc;
 	ZeroInitialize(bufferDesc);
@@ -84,14 +118,6 @@ void FontAtlas::Initialize()
 	srd.SysMemPitch = starImage->Width() * 4;
 	pDevice->CreateTexture2D(&texDesc, &srd, &*texture);
 
-	texDesc.Width = fontData.bitmapInfo.bmiHeader.biWidth;
-	texDesc.Height = fontData.bitmapInfo.bmiHeader.biHeight;
-	texDesc.Format = DXGI_FORMAT_R8_UNORM;
-
-	srd.pSysMem = fontData.DIBits.data();
-	srd.SysMemPitch = fontData.bitmapInfo.bmiHeader.biWidth;
-	pDevice->CreateTexture2D(&texDesc, &srd, &*fontAtlas);
-
 	D3D11_SAMPLER_DESC samplerDesc;
 	ZeroInitialize(samplerDesc);
 	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
@@ -110,9 +136,6 @@ void FontAtlas::Initialize()
 	t2srv.MostDetailedMip = 0;
 
 	pDevice->CreateShaderResourceView(*texture, &srvDesc, &*textureSRV);
-
-	srvDesc.Format = DXGI_FORMAT_R8_UNORM;
-	pDevice->CreateShaderResourceView(*fontAtlas, &srvDesc, &*fontAtlasSRV);
 
 	enableUpdate = true;
 }
