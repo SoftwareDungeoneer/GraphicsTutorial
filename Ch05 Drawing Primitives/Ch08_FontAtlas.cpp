@@ -42,7 +42,45 @@ void FontAtlas::LoadShaders()
 
 void FontAtlas::CreateFontTextures()
 {
+	// Set up for creating the original RGBA atlas from the loader
+	D3D11_TEXTURE2D_DESC texDesc;
+	ZeroInitialize(texDesc);
+	texDesc.Width = fontData.bitmapInfo.bmiHeader.biWidth;
+	texDesc.Height = fontData.bitmapInfo.bmiHeader.biHeight;
+	texDesc.ArraySize = 1;
+	texDesc.MipLevels = 1;
+	texDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	texDesc.SampleDesc.Count = 1;
+	texDesc.Usage = D3D11_USAGE_IMMUTABLE;
+	texDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
 
+	D3D11_SUBRESOURCE_DATA srd;
+	srd.pSysMem = fontData.DIBits.data();
+	srd.SysMemPitch = fontData.bitmapInfo.bmiHeader.biWidth * 4;
+	srd.SysMemSlicePitch = 0;
+	pDevice->CreateTexture2D(&texDesc, &srd, &*texture);
+
+	std::vector<BYTE> grayscaleBits;
+
+	texDesc.Format = DXGI_FORMAT_R8_UNORM;
+	texDesc.Usage = D3D11_USAGE_DEFAULT;
+	srd.pSysMem = grayscaleBits.data();
+	srd.SysMemPitch = fontData.bitmapInfo.bmiHeader.biWidth;
+
+	pDevice->CreateTexture2D(&texDesc, &srd, &*fontAtlasGrayscale);
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
+	ZeroInitialize(srvDesc);
+	srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	D3D11_TEX2D_SRV& t2srv = srvDesc.Texture2D;
+	t2srv.MipLevels = 1;
+	t2srv.MostDetailedMip = 0;
+
+	pDevice->CreateShaderResourceView(*fontAtlas, &srvDesc, &*fontAtlasSRV);
+
+	srvDesc.Format = DXGI_FORMAT_R8_UNORM;
+	pDevice->CreateShaderResourceView(*fontAtlasGrayscale, &srvDesc, &*fontAtlasGrayscaleSRV);
 }
 
 void FontAtlas::RescaleFontUVs()
@@ -50,16 +88,13 @@ void FontAtlas::RescaleFontUVs()
 	float cx = 1.f * fontData.bitmapInfo.bmiHeader.biWidth;
 	float cy = 1.f * fontData.bitmapInfo.bmiHeader.biHeight;
 
-	std::transform(
-		fontData.glyphQuads.begin(),
-		fontData.glyphQuads.end(),
-		fontData.glyphQuads.begin(),
-		[cx, cy](const auto& p) {
-			const auto& [c, r] = p;
-			RECTF rf{ r.left / cx, r.top / cy, r.right / cx, r.bottom / cy };
-			return std::make_pair(c, rf);
-		}
-	);
+	for (auto& [k, r] : fontData.glyphQuads)
+	{
+		r.left /= cx;
+		r.right /= cx;
+		r.top /= cy;
+		r.bottom /= cy;
+	}
 }
 
 std::vector<BYTE> FontAtlas::RemapFontBits()

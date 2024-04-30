@@ -150,7 +150,7 @@ void PolyLines::Render()
 		*viewportCBuffer,
 		*lineVertexConstants
 	};
-	pDeviceContext->VSSetConstantBuffers(0, vsBuffers.size(), vsBuffers.data());
+	pDeviceContext->VSSetConstantBuffers(0, (UINT)vsBuffers.size(), vsBuffers.data());
 	pDeviceContext->VSSetShader(*polyLineVS, nullptr, 0);
 
 	pDeviceContext->PSSetConstantBuffers(0, 1, &*lineParamsBuffer);

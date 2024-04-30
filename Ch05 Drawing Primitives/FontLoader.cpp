@@ -103,7 +103,7 @@ FontData FontLoader::ConvertFontToAtlas(HFONT hFont)
 
 		for (const auto& [k, r] : out.glyphQuads)
 		{
-			ExtTextOut(hdc, r.left, r.top, 0, nullptr, &k, 1, nullptr);
+			ExtTextOut(hdc, int(floor(r.left)), int(floor(r.top)), 0, nullptr, &k, 1, nullptr);
 		}
 
 		// Unselect bitmap

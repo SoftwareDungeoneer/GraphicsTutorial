@@ -143,7 +143,7 @@ void DrawingPrimitives::Render() {
 	pDeviceContext->RSSetViewports(1, &viewport);
 	pDeviceContext->OMSetRenderTargets(1, &*pRenderTarget, nullptr);
 
-	pDeviceContext->VSSetConstantBuffers(0, vsBuffers.size(), vsBuffers.data());
+	pDeviceContext->VSSetConstantBuffers(0, (UINT)vsBuffers.size(), vsBuffers.data());
 	pDeviceContext->VSSetShader(*primitivesVS, nullptr, 0);
 	pDeviceContext->PSSetShader(*pixelShader, nullptr, 0);
 
