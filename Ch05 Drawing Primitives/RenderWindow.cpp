@@ -14,6 +14,7 @@
 #include "Ch05_DrawingPrimitives.h"
 #include "Ch06_PolyLines.h"
 #include "Ch07_Textures.h"
+#include "Ch08_FontAtlas.h"
 
 #include "util.h"
 
@@ -96,13 +97,15 @@ void RenderWindow::SetDemo(Demos demo)
 	assert(demo < Demos::COUNT);
 	using PtrT = std::shared_ptr<Renderer>; 
 	struct Thunk { void (*fn)(PtrT&, HWND); };
-	constexpr Thunk thunks[static_cast<size_t>(Demos::COUNT)] = {
+	constexpr Thunk thunks[] = {
 		{ [](PtrT& ptr, HWND h) -> void { ptr = std::make_shared<FirstTriangle>(h); } },
 		{ [](PtrT& ptr, HWND h) -> void { ptr = std::make_shared<MovingTriangles>(h); } },
 		{ [](PtrT& ptr, HWND h) -> void { ptr = std::make_shared<DrawingPrimitives>(h); } },
 		{ [](PtrT& ptr, HWND h) -> void { ptr = std::make_shared<PolyLines>(h); } },
 		{ [](PtrT& ptr, HWND h) -> void { ptr = std::make_shared<Textures>(h); } },
+		{ [](PtrT& ptr, HWND h) -> void { ptr = std::make_shared<FontAtlas>(h); } },
 	};
+	static_assert(countof(thunks) == static_cast<unsigned>(Demos::COUNT));
 	if (demo < Demos::COUNT)
 	{
 		activeRenderer.reset();

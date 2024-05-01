@@ -33,25 +33,32 @@ protected:
 
 private:
 	FontData fontData;
+
+	// Textures and samplers
 	ComPtr<ID3D11Texture2D> fontAtlas;
-	ComPtr<ID3D11ShaderResourceView> fontAtlasSRV;
 	ComPtr<ID3D11Texture2D> fontAtlasGrayscale;
+	ComPtr<ID3D11SamplerState> samplerState;
+
+	// SRVs
+	ComPtr<ID3D11ShaderResourceView> fontAtlasSRV;
 	ComPtr<ID3D11ShaderResourceView> fontAtlasGrayscaleSRV;
 
-	std::unique_ptr<Image> starImage;
-
+	// Shaders
 	ComPtr<ID3D11VertexShader> vertexShader;
 	ComPtr<ID3D11PixelShader> pixelShader;
-
 	ComPtr<ID3D11InputLayout> inputLayout;
-	ComPtr<ID3D11Buffer> vertexBuffer;
+
+	// Buffers
+	ComPtr<ID3D11Buffer> fontAtlasVB;
+	ComPtr<ID3D11Buffer> grayscaleVB;
 	ComPtr<ID3D11Buffer> viewportConstantBuffer;
-	ComPtr<ID3D11Texture2D> texture;
-	ComPtr<ID3D11ShaderResourceView> textureSRV;
-	ComPtr<ID3D11SamplerState> samplerState;
+	ComPtr<ID3D11Buffer> colorConstantBuffer;
 
 	void LoadShaders();
 	void CreateFontTextures();
+	void CreateVertexBuffers();
+	void CreateConstantBuffers();
+
 	void RescaleFontUVs();
 	std::vector<BYTE> RemapFontBits();
 

@@ -17,11 +17,18 @@ const D3D11_INPUT_ELEMENT_DESC FontAtlas::Vertex::desc[]
 // window space with (0,0) at the lower right, we're specifying our
 // texel coords in normalized uv space, with (0,0) at the upper left
 // and (1,1) at the loewr right.
-const FontAtlas::Vertex QuadVertices[] = {
-	{ { 400 - 128, 300 + 128 }, { 0, 0 } }, // Upper left
-	{ { 400 + 128, 300 + 128 }, { 1, 0 } }, // Upper right
-	{ { 400 - 128, 300 - 128 }, { 0, 1 } }, // Lower left
-	{ { 400 + 128, 300 - 128 }, { 1, 1 } }  // Lower right
+const FontAtlas::Vertex FontQuad[] = {
+	{ { 0, 300 + 128 }, { 0, 0 } }, // Upper left
+	{ { 256, 300 + 128 }, { 1, 0 } }, // Upper right
+	{ { 0, 300 - 128 }, { 0, 1 } }, // Lower left
+	{ { 256, 300 - 128 }, { 1, 1 } }  // Lower right
+};
+
+const FontAtlas::Vertex GrayscaleQuad[] = {
+	{ { 257, 300 + 128 }, { 0, 0 } }, // Upper left
+	{ { 257 + 256, 300 + 128 }, { 1, 0 } }, // Upper right
+	{ { 257, 300 - 128 }, { 0, 1 } }, // Lower left
+	{ { 257 + 256, 300 - 128 }, { 1, 1 } }  // Lower right
 };
 
 void FontAtlas::LoadShaders()
@@ -58,9 +65,10 @@ void FontAtlas::CreateFontTextures()
 	srd.pSysMem = fontData.DIBits.data();
 	srd.SysMemPitch = fontData.bitmapInfo.bmiHeader.biWidth * 4;
 	srd.SysMemSlicePitch = 0;
-	pDevice->CreateTexture2D(&texDesc, &srd, &*texture);
+	pDevice->CreateTexture2D(&texDesc, &srd, &*fontAtlas);
 
-	std::vector<BYTE> grayscaleBits;
+	// Create the grayscale font atlas
+	std::vector<BYTE> grayscaleBits{ RemapFontBits() };
 
 	texDesc.Format = DXGI_FORMAT_R8_UNORM;
 	texDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -69,6 +77,7 @@ void FontAtlas::CreateFontTextures()
 
 	pDevice->CreateTexture2D(&texDesc, &srd, &*fontAtlasGrayscale);
 
+	// Create resource views for both textures
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
 	ZeroInitialize(srvDesc);
 	srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -81,6 +90,24 @@ void FontAtlas::CreateFontTextures()
 
 	srvDesc.Format = DXGI_FORMAT_R8_UNORM;
 	pDevice->CreateShaderResourceView(*fontAtlasGrayscale, &srvDesc, &*fontAtlasGrayscaleSRV);
+}
+
+void FontAtlas::CreateVertexBuffers()
+{
+	D3D11_BUFFER_DESC bufferDesc;
+	ZeroInitialize(bufferDesc);
+	bufferDesc.ByteWidth = sizeof(FontQuad);
+	bufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
+	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+
+	D3D11_SUBRESOURCE_DATA srd;
+	ZeroInitialize(srd);
+	srd.pSysMem = FontQuad;
+
+	pDevice->CreateBuffer(&bufferDesc, &srd, &*fontAtlasVB);
+
+	srd.pSysMem = GrayscaleQuad;
+	pDevice->CreateBuffer(&bufferDesc, &srd, &*grayscaleVB);
 }
 
 void FontAtlas::RescaleFontUVs()
@@ -100,10 +127,34 @@ void FontAtlas::RescaleFontUVs()
 std::vector<BYTE> FontAtlas::RemapFontBits()
 {
 	std::vector<BYTE> vb;
-
+	constexpr float coefficients[4] = { 0.114f, 0.587f, 0.299f, 0.f };
+	auto length = fontData.DIBits.size() / 4;
+	for (unsigned pos{ 0 }; pos < length; ++pos)
+	{
+		float acc{ 0.f };
+		for (unsigned n{ 0 }; n < 4; ++n)
+		{
+			acc += coefficients[n] * (*(fontData.DIBits.data() + pos + n));
+		}
+		vb.emplace_back(BYTE(acc / 255.f));
+	}
 	return vb;
 }
 
+void FontAtlas::CreateConstantBuffers()
+{
+	D3D11_BUFFER_DESC bufferDesc;
+	ZeroInitialize(bufferDesc);
+	bufferDesc.ByteWidth = aligned_size_16<D3D11_VIEWPORT>;
+	bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+
+	pDevice->CreateBuffer(&bufferDesc, nullptr, &*viewportConstantBuffer);
+
+	bufferDesc.ByteWidth = sizeof(float[4]);
+	pDevice->CreateBuffer(&bufferDesc, nullptr, &*colorConstantBuffer);
+}
 
 void FontAtlas::Initialize()
 {
@@ -112,46 +163,7 @@ void FontAtlas::Initialize()
 	fontData = FontLoader::LoadFont(_T("Calibri"), 19);
 	CreateFontTextures();
 	RescaleFontUVs();
-
-	starImage = std::make_unique<Image>();
-	starImage->Load(_T("WhiteStarOnGreen.png"));
-	auto imageBytes = starImage->GetFrameData(0);
-
-
-
-	D3D11_BUFFER_DESC bufferDesc;
-	ZeroInitialize(bufferDesc);
-	bufferDesc.ByteWidth = sizeof(QuadVertices);
-	bufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
-	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-
-	D3D11_SUBRESOURCE_DATA srd;
-	ZeroInitialize(srd);
-	srd.pSysMem = QuadVertices;
-
-	pDevice->CreateBuffer(&bufferDesc, &srd, &*vertexBuffer);
-
-	bufferDesc.ByteWidth = aligned_size_16<D3D11_VIEWPORT>;
-	bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-	bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	
-	pDevice->CreateBuffer(&bufferDesc, nullptr, &*viewportConstantBuffer);
-
-	D3D11_TEXTURE2D_DESC texDesc;
-	ZeroInitialize(texDesc);
-	texDesc.Width = starImage->Width();
-	texDesc.Height = starImage->Height();
-	texDesc.ArraySize = 1;
-	texDesc.MipLevels = 1;
-	texDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	texDesc.SampleDesc.Count = 1;
-	texDesc.Usage = D3D11_USAGE_IMMUTABLE;
-	texDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-	
-	srd.pSysMem = imageBytes.data();
-	srd.SysMemPitch = starImage->Width() * 4;
-	pDevice->CreateTexture2D(&texDesc, &srd, &*texture);
+	CreateConstantBuffers();
 
 	D3D11_SAMPLER_DESC samplerDesc;
 	ZeroInitialize(samplerDesc);
@@ -161,16 +173,6 @@ void FontAtlas::Initialize()
 	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
 	samplerDesc.MipLODBias = 0.f;
 	pDevice->CreateSamplerState(&samplerDesc, &*samplerState);
-
-	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
-	ZeroInitialize(srvDesc);
-	srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-	D3D11_TEX2D_SRV& t2srv = srvDesc.Texture2D;
-	t2srv.MipLevels = 1;
-	t2srv.MostDetailedMip = 0;
-
-	pDevice->CreateShaderResourceView(*texture, &srvDesc, &*textureSRV);
 
 	enableUpdate = true;
 }
@@ -186,7 +188,11 @@ void FontAtlas::Render()
 	if (!enableUpdate)
 		return;
 
+	pDeviceContext->ClearState();
+
 	constexpr float bgBlack[]{ 0.f, 0.f, 0.f, 1.f };
+	constexpr float textColor[]{ 0.8f, 0.361f, 0.149f, 1.f };
+
 	ComPtr<ID3D11Texture2D> pBackBuffer;
 	ComPtr<ID3D11RenderTargetView> pRenderTarget;
 
@@ -197,7 +203,7 @@ void FontAtlas::Render()
 	D3D11_VIEWPORT viewport{ ViewportFromTexture(pBackBuffer) };
 
 	std::array<ID3D11Buffer*, 1> vertexBuffers{
-		*vertexBuffer,
+		*fontAtlasVB,
 	};
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	pDeviceContext->Map(*viewportConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
@@ -217,7 +223,7 @@ void FontAtlas::Render()
 	pDeviceContext->VSSetShader(*vertexShader, nullptr, 0);
 
 	pDeviceContext->PSSetShader(*pixelShader, nullptr, 0);
-	pDeviceContext->PSSetShaderResources(0, 1, &*textureSRV);
+	pDeviceContext->PSSetShaderResources(0, 1, &*fontAtlasSRV);
 	pDeviceContext->PSSetSamplers(0, 1, &*samplerState);
 
 	pDeviceContext->Draw(4, 0);

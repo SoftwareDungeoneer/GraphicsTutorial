@@ -51,7 +51,8 @@ FontData FontLoader::ConvertFontToAtlas(HFONT hFont)
 	memset(&out.tm, 0, sizeof(out.tm));
 	memset(&out.bitmapInfo, 0, sizeof(out.bitmapInfo));
 
-	HDC hdc = CreateDC(_T("DISPLAY"), nullptr, nullptr, nullptr);
+	HDC hDisplayDc = CreateDC(_T("DISPLAY"), nullptr, nullptr, nullptr);
+	HDC hdc = CreateCompatibleDC(hDisplayDc);
 	if (hdc)
 	{
 		HFONT hOldFont = (HFONT)SelectObject(hdc, hFont);
@@ -92,7 +93,7 @@ FontData FontLoader::ConvertFontToAtlas(HFONT hFont)
 		}
 
 		// create & write to atlas
-		HBITMAP hBitmap = CreateCompatibleBitmap(hdc, cxcy, cxcy);
+		HBITMAP hBitmap = CreateCompatibleBitmap(hDisplayDc, cxcy, cxcy);
 		hBitmap = (HBITMAP)SelectObject(hdc, hBitmap);
 
 		SetBkColor(hdc, RGB(0, 0, 0));
@@ -129,6 +130,7 @@ FontData FontLoader::ConvertFontToAtlas(HFONT hFont)
 
 		SelectObject(hdc, hOldFont);
 		DeleteDC(hdc);
+		DeleteDC(hDisplayDc);
 	}
 
 	return out;
