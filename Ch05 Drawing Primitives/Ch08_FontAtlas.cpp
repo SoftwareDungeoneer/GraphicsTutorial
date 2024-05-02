@@ -209,7 +209,7 @@ void FontAtlas::RenderString(POINTF topleft, LPCTSTR lpsz, unsigned nChars, cons
 	float height = data.bottom - data.top;
 
 	verts.emplace_back(Vertex{
-		{ topleft.x, topleft.y + height },
+		{ topleft.x, topleft.y - height },
 		{ data.left / bmpx, data.bottom / bmpy }
 	});
 	verts.emplace_back(Vertex{
@@ -220,10 +220,10 @@ void FontAtlas::RenderString(POINTF topleft, LPCTSTR lpsz, unsigned nChars, cons
 	for (unsigned n{ 0 }; n < nChars; ++n)
 	{
 		data = fontData.glyphQuads[lpsz[n]];
-		topleft.x += data.right;
+		topleft.x += data.right - data.left;
 		height = data.bottom - data.top;
 		verts.emplace_back(Vertex{
-			{ topleft.x, topleft.y + height },
+			{ topleft.x, topleft.y - height },
 			{ data.right / bmpx, data.bottom / bmpy }
 		});
 		verts.emplace_back(Vertex{
@@ -256,7 +256,26 @@ void FontAtlas::RenderString(POINTF topleft, LPCTSTR lpsz, unsigned nChars, cons
 	pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 	pDeviceContext->PSSetShader(*basicFontPS, nullptr, 0);
 	pDeviceContext->PSSetShaderResources(0, 1, &*fontAtlasGrayscaleSRV);
+
+	D3D11_RASTERIZER_DESC rasterDesc;
+	rasterDesc.FillMode = D3D11_FILL_SOLID;
+	rasterDesc.CullMode = D3D11_CULL_NONE;
+	rasterDesc.FrontCounterClockwise = FALSE;
+	rasterDesc.DepthBias = 0;
+	rasterDesc.DepthBiasClamp = 0;
+	rasterDesc.SlopeScaledDepthBias = 0.f;
+	rasterDesc.DepthClipEnable = TRUE;
+	rasterDesc.ScissorEnable = FALSE;
+	rasterDesc.MultisampleEnable = FALSE;
+	rasterDesc.AntialiasedLineEnable = FALSE;
+
+	ComPtr<ID3D11RasterizerState> pRSnew;
+	pDevice->CreateRasterizerState(&rasterDesc, &*pRSnew);
+	pDeviceContext->RSSetState(*pRSnew);
+	
 	pDeviceContext->Draw(verts.size(), 0);
+
+
 }
 
 void FontAtlas::Render()
