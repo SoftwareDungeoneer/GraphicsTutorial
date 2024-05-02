@@ -2,8 +2,11 @@
 
 #include <tchar.h>
 
+#include <cassert>
+
 #include <algorithm>
 #include <array>
+#include <vector>
 
 #include "util.h"
 
@@ -18,25 +21,27 @@ const D3D11_INPUT_ELEMENT_DESC FontAtlas::Vertex::desc[]
 // texel coords in normalized uv space, with (0,0) at the upper left
 // and (1,1) at the loewr right.
 const FontAtlas::Vertex FontQuad[] = {
-	{ { 0, 300 + 128 }, { 0, 0 } }, // Upper left
-	{ { 256, 300 + 128 }, { 1, 0 } }, // Upper right
-	{ { 0, 300 - 128 }, { 0, 1 } }, // Lower left
-	{ { 256, 300 - 128 }, { 1, 1 } }  // Lower right
+	{ { 0, 300 + 64 }, { 0, 0 } }, // Upper left
+	{ { 128, 300 + 64 }, { 1, 0 } }, // Upper right
+	{ { 0, 300 - 64 }, { 0, 1 } }, // Lower left
+	{ { 128, 300 - 64 }, { 1, 1 } }  // Lower right
 };
 
 const FontAtlas::Vertex GrayscaleQuad[] = {
-	{ { 257, 300 + 128 }, { 0, 0 } }, // Upper left
-	{ { 257 + 256, 300 + 128 }, { 1, 0 } }, // Upper right
-	{ { 257, 300 - 128 }, { 0, 1 } }, // Lower left
-	{ { 257 + 256, 300 - 128 }, { 1, 1 } }  // Lower right
+	{ { 129, 300 + 64 }, { 0, 0 } }, // Upper left
+	{ { 129 + 128, 300 + 64 }, { 1, 0 } }, // Upper right
+	{ { 129, 300 - 64 }, { 0, 1 } }, // Lower left
+	{ { 129 + 128, 300 - 64 }, { 1, 1 } }  // Lower right
 };
 
 void FontAtlas::LoadShaders()
 {
 	auto vsBytes = LoadFile(_T("TexturedQuad.vsc"));
 	auto psBytes = LoadFile(_T("TexturedQuad.psc"));
+	auto fontPsBytes = LoadFile(_T("Ch08_BasicFont.psc"));
 	pDevice->CreateVertexShader(vsBytes.data(), vsBytes.size(), nullptr, &*vertexShader);
 	pDevice->CreatePixelShader(psBytes.data(), psBytes.size(), nullptr, &*pixelShader);
+	pDevice->CreatePixelShader(fontPsBytes.data(), fontPsBytes.size(), nullptr, &*basicFontPS);
 
 	pDevice->CreateInputLayout(
 		FontAtlas::Vertex::desc,
@@ -129,14 +134,18 @@ std::vector<BYTE> FontAtlas::RemapFontBits()
 	std::vector<BYTE> vb;
 	constexpr float coefficients[4] = { 0.114f, 0.587f, 0.299f, 0.f };
 	auto length = fontData.DIBits.size() / 4;
+	vb.reserve(length);
 	for (unsigned pos{ 0 }; pos < length; ++pos)
 	{
 		float acc{ 0.f };
+		unsigned x = (pos) % fontData.bitmapInfo.bmiHeader.biWidth;
+		unsigned y = (pos) / fontData.bitmapInfo.bmiHeader.biWidth;
+		auto bp = fontData.DIBits.data() + (4 * pos);
 		for (unsigned n{ 0 }; n < 4; ++n)
 		{
-			acc += coefficients[n] * (*(fontData.DIBits.data() + pos + n));
+			acc += coefficients[n] * (*(bp + n));
 		}
-		vb.emplace_back(BYTE(acc / 255.f));
+		vb.emplace_back(BYTE(acc));
 	}
 	return vb;
 }
@@ -162,8 +171,9 @@ void FontAtlas::Initialize()
 
 	fontData = FontLoader::LoadFont(_T("Calibri"), 19);
 	CreateFontTextures();
-	RescaleFontUVs();
+	//RescaleFontUVs();
 	CreateConstantBuffers();
+	CreateVertexBuffers();
 
 	D3D11_SAMPLER_DESC samplerDesc;
 	ZeroInitialize(samplerDesc);
@@ -183,6 +193,72 @@ void FontAtlas::Update(double elapsed)
 		Initialize();
 }
 
+void FontAtlas::RenderString(POINTF topleft, LPCTSTR lpsz, unsigned nChars, const float color[4])
+{
+	assert(lpsz);
+	assert(nChars);
+
+	ComPtr<ID3D11Buffer> vb;
+	std::vector<Vertex> verts;
+	verts.reserve(2 * nChars + 2);
+
+	const float bmpx = fontData.bitmapInfo.bmiHeader.biHeight * 1.f;
+	const float bmpy = fontData.bitmapInfo.bmiHeader.biWidth * 1.f;
+
+	auto data = fontData.glyphQuads[*lpsz];
+	float height = data.bottom - data.top;
+
+	verts.emplace_back(Vertex{
+		{ topleft.x, topleft.y + height },
+		{ data.left / bmpx, data.bottom / bmpy }
+	});
+	verts.emplace_back(Vertex{
+		{ topleft.x, topleft.y },
+		{ data.left / bmpx, data.top / bmpy }
+	});
+
+	for (unsigned n{ 0 }; n < nChars; ++n)
+	{
+		data = fontData.glyphQuads[lpsz[n]];
+		topleft.x += data.right;
+		height = data.bottom - data.top;
+		verts.emplace_back(Vertex{
+			{ topleft.x, topleft.y + height },
+			{ data.right / bmpx, data.bottom / bmpy }
+		});
+		verts.emplace_back(Vertex{
+			{ topleft.x, topleft.y },
+			{ data.right / bmpx, data.top / bmpy }
+		});
+	}
+
+	D3D11_BUFFER_DESC bufferDesc;
+	ZeroInitialize(bufferDesc);
+	bufferDesc.ByteWidth = verts.size() * sizeof(Vertex);
+	bufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
+	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+
+	D3D11_SUBRESOURCE_DATA srd;
+	ZeroInitialize(srd);
+	srd.pSysMem = verts.data();
+
+	pDevice->CreateBuffer(&bufferDesc, &srd, &*vb);
+
+	D3D11_MAPPED_SUBRESOURCE sub;
+	pDeviceContext->Map(*colorConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &sub);
+	memcpy(sub.pData, color, sizeof(float[4]));
+	pDeviceContext->Unmap(*colorConstantBuffer, 0);
+
+	unsigned strides[]{ 0 };
+	unsigned offsets[]{ 0 };
+	std::array<ID3D11Buffer*, 1> buffers{ *vb };
+	pDeviceContext->IASetVertexBuffers(0, 1, buffers.data(), strides, offsets);
+	pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+	pDeviceContext->PSSetShader(*basicFontPS, nullptr, 0);
+	pDeviceContext->PSSetShaderResources(0, 1, &*fontAtlasGrayscaleSRV);
+	pDeviceContext->Draw(verts.size(), 0);
+}
+
 void FontAtlas::Render()
 {
 	if (!enableUpdate)
@@ -190,7 +266,7 @@ void FontAtlas::Render()
 
 	pDeviceContext->ClearState();
 
-	constexpr float bgBlack[]{ 0.f, 0.f, 0.f, 1.f };
+	constexpr float bgColor[]{ 1.f, 1.f, 1.f, 1.f };
 	constexpr float textColor[]{ 0.8f, 0.361f, 0.149f, 1.f };
 
 	ComPtr<ID3D11Texture2D> pBackBuffer;
@@ -198,7 +274,7 @@ void FontAtlas::Render()
 
 	pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&*pBackBuffer);
 	pDevice->CreateRenderTargetView(*pBackBuffer, nullptr, &*pRenderTarget);
-	pDeviceContext->ClearRenderTargetView(*pRenderTarget, bgBlack);
+	pDeviceContext->ClearRenderTargetView(*pRenderTarget, bgColor);
 
 	D3D11_VIEWPORT viewport{ ViewportFromTexture(pBackBuffer) };
 
@@ -227,6 +303,14 @@ void FontAtlas::Render()
 	pDeviceContext->PSSetSamplers(0, 1, &*samplerState);
 
 	pDeviceContext->Draw(4, 0);
+
+	vertexBuffers[0] = *grayscaleVB;
+	pDeviceContext->IASetVertexBuffers(0, 1, vertexBuffers.data(), strides, offsets);
+	pDeviceContext->PSSetShaderResources(0, 1, &*fontAtlasGrayscaleSRV);
+	pDeviceContext->Draw(4, 0);
+
+	POINTF hwtl{ 5.f, 25.f };
+	RenderString(hwtl, _T("Hello World!"), 12, textColor);
 
 	pSwapChain->Present(1, 0);
 }

@@ -1,0 +1,20 @@
+Texture2D colorTexture : register(t0);
+SamplerState colorSampler : register(s0);
+
+cbuffer TextParams
+{
+    float4 color;
+};
+
+struct PSIn
+{
+    float4 position : SV_Position;
+    float2 tex : TEXCOORD;
+};
+
+float4 main(PSIn psIn) : SV_Target
+{
+    float alpha = colorTexture.Sample(colorSampler, psIn.tex).x;
+    return float4(color.rgb * color.a, alpha);
+}
+

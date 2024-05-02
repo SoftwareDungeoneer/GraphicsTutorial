@@ -61,7 +61,7 @@ FontData FontLoader::ConvertFontToAtlas(HFONT hFont)
 
 		bool succeeded{ false };
 		int cxcy = 128;
-		for (; !succeeded; cxcy *= 2)
+		while (!succeeded)
 		{
 			// Presume succeess, so we can set failure later
 			succeeded = true;
@@ -114,7 +114,7 @@ FontData FontLoader::ConvertFontToAtlas(HFONT hFont)
 		out.bitmapInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
 		if (GetDIBits(hdc, hBitmap, 0, 0, nullptr, &out.bitmapInfo, DIB_RGB_COLORS))
 		{
-			out.bitmapInfo.bmiHeader.biHeight = abs(out.bitmapInfo.bmiHeader.biHeight);
+			out.bitmapInfo.bmiHeader.biHeight = -abs(out.bitmapInfo.bmiHeader.biHeight);
 			out.bitmapInfo.bmiHeader.biCompression = BI_RGB;
 			out.DIBits.resize(out.bitmapInfo.bmiHeader.biSizeImage);
 			GetDIBits(
@@ -126,6 +126,7 @@ FontData FontLoader::ConvertFontToAtlas(HFONT hFont)
 				&out.bitmapInfo,
 				DIB_RGB_COLORS
 			);
+			out.bitmapInfo.bmiHeader.biHeight *= -1;
 		}
 
 		SelectObject(hdc, hOldFont);

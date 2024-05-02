@@ -46,6 +46,7 @@ private:
 	// Shaders
 	ComPtr<ID3D11VertexShader> vertexShader;
 	ComPtr<ID3D11PixelShader> pixelShader;
+	ComPtr<ID3D11PixelShader> basicFontPS;
 	ComPtr<ID3D11InputLayout> inputLayout;
 
 	// Buffers
@@ -62,7 +63,7 @@ private:
 	void RescaleFontUVs();
 	std::vector<BYTE> RemapFontBits();
 
-	std::array<Vertex, 4> WorldRectToVertices(RECT r);
+	void RenderString(POINTF topleft, LPCTSTR lpsz, unsigned nChars, const float color[4]);
 };
 
 #endif // GRAPHICS_TUTORIAL_CH07_FONT_ATLAS_H

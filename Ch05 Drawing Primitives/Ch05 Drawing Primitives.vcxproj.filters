@@ -25,6 +25,9 @@
     <FxCompile Include="FirstTri.vs">
       <Filter>Shaders\Vertex</Filter>
     </FxCompile>
+    <FxCompile Include="Ch08_BasicFont.ps">
+      <Filter>Shaders\Pixel</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
