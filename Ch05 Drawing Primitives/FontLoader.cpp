@@ -88,7 +88,7 @@ FontData FontLoader::ConvertFontToAtlas(HFONT hFont)
 					}
 				}
 				out.glyphQuads[kGlyphChars[n]] = RectfFromRect(r);
-				left += size.cx;
+				left += size.cx + 1;
 			}
 		}
 

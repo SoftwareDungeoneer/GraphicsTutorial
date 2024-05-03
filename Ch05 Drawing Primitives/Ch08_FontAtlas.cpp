@@ -21,17 +21,17 @@ const D3D11_INPUT_ELEMENT_DESC FontAtlas::Vertex::desc[]
 // texel coords in normalized uv space, with (0,0) at the upper left
 // and (1,1) at the loewr right.
 const FontAtlas::Vertex FontQuad[] = {
-	{ { 0, 300 + 64 }, { 0, 0 } }, // Upper left
-	{ { 128, 300 + 64 }, { 1, 0 } }, // Upper right
-	{ { 0, 300 - 64 }, { 0, 1 } }, // Lower left
-	{ { 128, 300 - 64 }, { 1, 1 } }  // Lower right
+	{ { 0,   300 + 128 }, { 0, 0 } }, // Upper left
+	{ { 256, 300 + 128 }, { 1, 0 } }, // Upper right
+	{ { 0,   300 - 128 }, { 0, 1 } }, // Lower left
+	{ { 256, 300 - 128 }, { 1, 1 } }  // Lower right
 };
 
 const FontAtlas::Vertex GrayscaleQuad[] = {
-	{ { 129, 300 + 64 }, { 0, 0 } }, // Upper left
-	{ { 129 + 128, 300 + 64 }, { 1, 0 } }, // Upper right
-	{ { 129, 300 - 64 }, { 0, 1 } }, // Lower left
-	{ { 129 + 128, 300 - 64 }, { 1, 1 } }  // Lower right
+	{ { 256,       300 + 128 }, { 0, 0 } }, // Upper left
+	{ { 256 + 256, 300 + 128 }, { 1, 0 } }, // Upper right
+	{ { 256,       300 - 128 }, { 0, 1 } }, // Lower left
+	{ { 256 + 256, 300 - 128 }, { 1, 1 } }  // Lower right
 };
 
 void FontAtlas::LoadShaders()
@@ -283,7 +283,7 @@ void FontAtlas::RenderString(POINTF topleft, LPCTSTR lpsz, unsigned nChars, cons
 	std::array<ID3D11Buffer*, 1> buffers{ *vb };
 	pDeviceContext->IASetIndexBuffer(*indexBuffer, DXGI_FORMAT_R16_UINT, 0);
 	pDeviceContext->IASetVertexBuffers(0, 1, buffers.data(), strides, offsets);
-	pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+	pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	pDeviceContext->PSSetShader(*basicFontPS, nullptr, 0);
 	pDeviceContext->PSSetConstantBuffers(0, 1, &*colorConstantBuffer);
 	pDeviceContext->PSSetShaderResources(0, 1, &*fontAtlasGrayscaleSRV);
@@ -310,13 +310,13 @@ void FontAtlas::RenderString(POINTF topleft, LPCTSTR lpsz, unsigned nChars, cons
 	pDevice->CreateRasterizerState(&rasterDesc, &*pRSWireframe);
 
 	D3D11_MAPPED_SUBRESOURCE sub;
-	float wireColor[4] = { 0.f, 1.f, 0.f, 1.f };
-	pDeviceContext->Map(*colorConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &sub);
-	memcpy(sub.pData, wireColor, sizeof(float[4]));
-	pDeviceContext->Unmap(*colorConstantBuffer, 0);
+	//float wireColor[4] = { 0.f, 1.f, 0.f, 1.f };
+	//pDeviceContext->Map(*colorConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &sub);
+	//memcpy(sub.pData, wireColor, sizeof(float[4]));
+	//pDeviceContext->Unmap(*colorConstantBuffer, 0);
 
-	pDeviceContext->RSSetState(*pRSWireframe);
-	pDeviceContext->DrawIndexed(indices.size(), 0, 0);
+	//pDeviceContext->RSSetState(*pRSWireframe);
+	//pDeviceContext->DrawIndexed(indices.size(), 0, 0);
 
 	pDeviceContext->Map(*colorConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &sub);
 	memcpy(sub.pData, color, sizeof(float[4]));
