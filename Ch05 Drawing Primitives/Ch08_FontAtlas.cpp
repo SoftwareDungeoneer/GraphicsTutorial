@@ -184,6 +184,24 @@ void FontAtlas::Initialize()
 	samplerDesc.MipLODBias = 0.f;
 	pDevice->CreateSamplerState(&samplerDesc, &*samplerState);
 
+	D3D11_BLEND_DESC blendDesc;
+	D3D11_RENDER_TARGET_BLEND_DESC rtbd
+	{
+		TRUE, // Blend enable
+		D3D11_BLEND_SRC_ALPHA,
+		D3D11_BLEND_INV_SRC_ALPHA,
+		D3D11_BLEND_OP_ADD,
+		D3D11_BLEND_ZERO,
+		D3D11_BLEND_DEST_ALPHA,
+		D3D11_BLEND_OP_ADD,
+		D3D11_COLOR_WRITE_ENABLE_ALL
+	};
+	ZeroInitialize(blendDesc);
+	blendDesc.AlphaToCoverageEnable = FALSE;
+	blendDesc.IndependentBlendEnable = FALSE;
+	blendDesc.RenderTarget[0] = rtbd;
+	pDevice->CreateBlendState(&blendDesc, &*alphaEnableBlendState);
+
 	enableUpdate = true;
 }
 
@@ -198,38 +216,46 @@ void FontAtlas::RenderString(POINTF topleft, LPCTSTR lpsz, unsigned nChars, cons
 	assert(lpsz);
 	assert(nChars);
 
+	constexpr short indexTemplate[]{ 0, 1, 2, 2, 1, 3 };
+
 	ComPtr<ID3D11Buffer> vb;
+	ComPtr<ID3D11Buffer> indexBuffer;
+	std::vector<short> indices(6 * nChars);
+	for (unsigned n{ 0 }; n < nChars; ++n)
+	{
+		for (unsigned j{ 0 }; j < countof(indexTemplate); ++j)
+			indices[(6*n) + j] = indexTemplate[j] + (4 * n);
+	}
 	std::vector<Vertex> verts;
-	verts.reserve(2 * nChars + 2);
+	verts.reserve(4 * nChars);
 
 	const float bmpx = fontData.bitmapInfo.bmiHeader.biHeight * 1.f;
 	const float bmpy = fontData.bitmapInfo.bmiHeader.biWidth * 1.f;
 
 	auto data = fontData.glyphQuads[*lpsz];
-	float height = data.bottom - data.top;
-
-	verts.emplace_back(Vertex{
-		{ topleft.x, topleft.y - height },
-		{ data.left / bmpx, data.bottom / bmpy }
-	});
-	verts.emplace_back(Vertex{
-		{ topleft.x, topleft.y },
-		{ data.left / bmpx, data.top / bmpy }
-	});
 
 	for (unsigned n{ 0 }; n < nChars; ++n)
 	{
 		data = fontData.glyphQuads[lpsz[n]];
-		topleft.x += data.right - data.left;
-		height = data.bottom - data.top;
-		verts.emplace_back(Vertex{
-			{ topleft.x, topleft.y - height },
-			{ data.right / bmpx, data.bottom / bmpy }
-		});
-		verts.emplace_back(Vertex{
+		float height = data.bottom - data.top;
+		float width = data.right - data.left;
+		verts.emplace_back(Vertex{ // Upper left vert
 			{ topleft.x, topleft.y },
+			{ data.left / bmpx, data.top / bmpy }
+		});
+		verts.emplace_back(Vertex{ // Upper right vert
+			{ topleft.x + width, topleft.y },
 			{ data.right / bmpx, data.top / bmpy }
 		});
+		verts.emplace_back(Vertex{ // Lower left vert
+			{ topleft.x, topleft.y - height },
+			{ data.left / bmpx, data.bottom / bmpy }
+		});
+		verts.emplace_back(Vertex{ // lower right vert
+			{ topleft.x + width, topleft.y - height },
+			{ data.right / bmpx, data.bottom / bmpy }
+		});
+		topleft.x += width;
 	}
 
 	D3D11_BUFFER_DESC bufferDesc;
@@ -244,18 +270,24 @@ void FontAtlas::RenderString(POINTF topleft, LPCTSTR lpsz, unsigned nChars, cons
 
 	pDevice->CreateBuffer(&bufferDesc, &srd, &*vb);
 
-	D3D11_MAPPED_SUBRESOURCE sub;
-	pDeviceContext->Map(*colorConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &sub);
-	memcpy(sub.pData, color, sizeof(float[4]));
-	pDeviceContext->Unmap(*colorConstantBuffer, 0);
+	bufferDesc.ByteWidth = indices.size() * sizeof(short);
+	bufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	srd.pSysMem = indices.data();
 
-	unsigned strides[]{ 0 };
+	pDevice->CreateBuffer(&bufferDesc, &srd, &*indexBuffer);
+
+
+
+	unsigned strides[]{ sizeof(Vertex) };
 	unsigned offsets[]{ 0 };
 	std::array<ID3D11Buffer*, 1> buffers{ *vb };
+	pDeviceContext->IASetIndexBuffer(*indexBuffer, DXGI_FORMAT_R16_UINT, 0);
 	pDeviceContext->IASetVertexBuffers(0, 1, buffers.data(), strides, offsets);
 	pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 	pDeviceContext->PSSetShader(*basicFontPS, nullptr, 0);
+	pDeviceContext->PSSetConstantBuffers(0, 1, &*colorConstantBuffer);
 	pDeviceContext->PSSetShaderResources(0, 1, &*fontAtlasGrayscaleSRV);
+
 
 	D3D11_RASTERIZER_DESC rasterDesc;
 	rasterDesc.FillMode = D3D11_FILL_SOLID;
@@ -268,14 +300,34 @@ void FontAtlas::RenderString(POINTF topleft, LPCTSTR lpsz, unsigned nChars, cons
 	rasterDesc.ScissorEnable = FALSE;
 	rasterDesc.MultisampleEnable = FALSE;
 	rasterDesc.AntialiasedLineEnable = FALSE;
-
-	ComPtr<ID3D11RasterizerState> pRSnew;
-	pDevice->CreateRasterizerState(&rasterDesc, &*pRSnew);
-	pDeviceContext->RSSetState(*pRSnew);
 	
-	pDeviceContext->Draw(verts.size(), 0);
+	ComPtr<ID3D11RasterizerState> pRSnew;
+	ComPtr<ID3D11RasterizerState> pRSWireframe;
 
+	pDevice->CreateRasterizerState(&rasterDesc, &*pRSnew);
 
+	rasterDesc.FillMode = D3D11_FILL_WIREFRAME;
+	pDevice->CreateRasterizerState(&rasterDesc, &*pRSWireframe);
+
+	D3D11_MAPPED_SUBRESOURCE sub;
+	float wireColor[4] = { 0.f, 1.f, 0.f, 1.f };
+	pDeviceContext->Map(*colorConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &sub);
+	memcpy(sub.pData, wireColor, sizeof(float[4]));
+	pDeviceContext->Unmap(*colorConstantBuffer, 0);
+
+	pDeviceContext->RSSetState(*pRSWireframe);
+	pDeviceContext->DrawIndexed(indices.size(), 0, 0);
+
+	pDeviceContext->Map(*colorConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &sub);
+	memcpy(sub.pData, color, sizeof(float[4]));
+	pDeviceContext->Unmap(*colorConstantBuffer, 0);
+
+	pDeviceContext->OMSetBlendState(*alphaEnableBlendState, nullptr, 0xffffffff);
+	pDeviceContext->RSSetState(*pRSnew);
+	pDeviceContext->DrawIndexed(indices.size(), 0, 0);
+
+	pDeviceContext->OMSetBlendState(nullptr, nullptr, 0xffffffff);
+	//pDeviceContext->Draw(verts.size(), 0);
 }
 
 void FontAtlas::Render()

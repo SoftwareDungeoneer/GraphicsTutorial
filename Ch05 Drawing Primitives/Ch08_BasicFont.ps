@@ -15,6 +15,6 @@ struct PSIn
 float4 main(PSIn psIn) : SV_Target
 {
     float alpha = colorTexture.Sample(colorSampler, psIn.tex).x;
-    return float4(color.rgb * color.a, alpha);
+    float4 colOut = float4(color.rgb * color.a, alpha);
+    return colOut;
 }
-

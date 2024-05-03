@@ -10,7 +10,7 @@ namespace
 		_T("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
 		_T("abcdefghijklmnopqrstuvwxyz")
 		_T("0123456789-=!@#$%^&*()_+`")
-		_T("[]\\{}|;:'\",./<>?");
+		_T("[]\\{}|;:'\",./<>? ");
 }
 FontData FontLoader::LoadFont(LPCTSTR facename, int height)
 {

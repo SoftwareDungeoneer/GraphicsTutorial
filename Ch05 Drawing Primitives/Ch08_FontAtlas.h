@@ -34,10 +34,11 @@ protected:
 private:
 	FontData fontData;
 
-	// Textures and samplers
+	// Textures, samplers, and blend state
 	ComPtr<ID3D11Texture2D> fontAtlas;
 	ComPtr<ID3D11Texture2D> fontAtlasGrayscale;
 	ComPtr<ID3D11SamplerState> samplerState;
+	ComPtr<ID3D11BlendState> alphaEnableBlendState;
 
 	// SRVs
 	ComPtr<ID3D11ShaderResourceView> fontAtlasSRV;
