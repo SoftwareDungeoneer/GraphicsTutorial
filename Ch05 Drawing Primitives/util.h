@@ -7,6 +7,7 @@
 #include <type_traits>
 #include <memory>
 #include <vector>
+#include <ostream>
 
 #define countof(arr) (sizeof(arr) / sizeof(arr[0]))
 
@@ -39,6 +40,13 @@ inline RECTF RectfFromRect(const RECT& r)
 		1.f * r.right,
 		1.f * r.bottom 
 	};
+}
+
+inline std::ostream& operator<<(std::ostream& lhs, const RECT& rhs)
+{
+	lhs << "{ " << rhs.left << ", " << rhs.top
+		<< ", " << rhs.right << ", " << rhs.bottom << " }";
+	return lhs;
 }
 
 #endif // GRAPHICS_TUTORIAL_UTIL_H

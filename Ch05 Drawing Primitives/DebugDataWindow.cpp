@@ -4,7 +4,7 @@
 
 #include "AppLocalMessages.h"
 
-LPCTSTR DebugDataWindow::kWindowClassName{ _T("Render Window") };
+LPCTSTR DebugDataWindow::kWindowClassName{ _T("Debug Data Window") };
 
 namespace
 {
@@ -28,7 +28,7 @@ DebugDataWindow::~DebugDataWindow()
 
 void DebugDataWindow::UpdateWindow()
 {
-	InvalidateRect(hWnd, nullptr, true);
+	InvalidateRect(hWnd, nullptr, TRUE);
 }
 
 void DebugDataWindow::UpdateValue(
@@ -76,14 +76,14 @@ void DebugDataWindow::RegisterWindowClass()
 {
 	WNDCLASSEX wndClass{
 		sizeof(WNDCLASSEX),
-		0,
+		CS_HREDRAW | CS_VREDRAW,
 		&DebugDataWindow::WndProc,
 		0,
 		0,
 		GetModuleHandle(NULL),
 		LoadIcon(NULL, IDI_APPLICATION),
 		LoadCursor(NULL, IDC_ARROW),
-		nullptr,
+		((HBRUSH)(COLOR_WINDOW + 1)),
 		nullptr,
 		kWindowClassName,
 		nullptr
@@ -170,9 +170,10 @@ LRESULT DebugDataWindow::OnPaint()
 	RECT rDraw{ rClient.left + 3, rClient.top + 3, rClient.right - 3, rClient.bottom - 3 };
 	TEXTMETRICA tm;
 	BeginPaint(hWnd, &ps);
+	BitBlt(ps.hdc, 0, 0, rClient.right, rClient.bottom, ps.hdc, 0, 0, WHITENESS);
 	GetTextMetricsA(ps.hdc, &tm);
-
 	SetTextAlign(ps.hdc, TA_TOP | TA_LEFT);
+
 	int lineTop{ rDraw.top };
 	constexpr int inset{ 10 };
 
@@ -189,8 +190,8 @@ LRESULT DebugDataWindow::OnPaint()
 			nullptr);
 		lineTop += tm.tmHeight;
 
-		if (!dataMap.second.expanded)
-			continue;
+		//if (!dataMap.second.expanded)
+		//	continue;
 
 		for (const auto& [key, value] : dataMap.first)
 		{

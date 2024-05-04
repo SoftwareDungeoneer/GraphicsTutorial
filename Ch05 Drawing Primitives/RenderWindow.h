@@ -56,9 +56,13 @@ private:
 	void RegisterWindowClass();
 	HRESULT CreateUIWindow();
 
+	void UpdateDebugInfo(const std::string& key, const std::string& value);
+	void UpdateDebugPosition();
+
 	static LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM, LPARAM);
 	LRESULT OnCreate();
 	LRESULT OnDestroy();
+	LRESULT OnMove();
 	LRESULT OnSize();
 	LRESULT OnNotifyDebugDataDestroyed();
 

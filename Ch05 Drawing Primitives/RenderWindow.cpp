@@ -6,6 +6,7 @@
 #include <array>
 #include <map>
 #include <random>
+#include <sstream>
 #include <vector>
 
 #include "AppLocalMessages.h"
@@ -24,6 +25,13 @@ LPCTSTR RenderWindow::kWindowClassName{ _T("Render Window") };
 namespace
 {
 	LPCTSTR kClassPointerProp{ _T("Class Pointer") };
+
+	std::string RectToString(const RECT& r)
+	{
+		std::ostringstream oss;
+		oss << r;
+		return oss.str();
+	}
 }
 
 RenderWindow::RenderWindow()
@@ -95,6 +103,33 @@ HRESULT RenderWindow::CreateUIWindow()
 	return S_OK;
 }
 
+void RenderWindow::UpdateDebugInfo(const std::string& key, const std::string& value)
+{
+	const std::string section{ "Render Window" };
+	if (debugDataWindow)
+	{
+		debugDataWindow->UpdateValue(section, key, value);
+	}
+	else
+	{
+		(*debugDataStore)[section].first[key] = value;
+	}
+}
+
+void RenderWindow::UpdateDebugPosition()
+{
+	RECT rWnd;
+	RECT rClient;
+	GetWindowRect(hWnd, &rWnd);
+	GetClientRect(hWnd, &rClient);
+	std::ostringstream oss;
+	oss << rWnd << "(" << (rWnd.right - rWnd.left) << " x " << (rWnd.bottom - rWnd.top) << ")";
+	UpdateDebugInfo("Window Position", oss.str());
+
+	oss.str("");
+	oss << rClient.right << " x " << rClient.bottom;
+	UpdateDebugInfo("Client size", oss.str());
+}
 void RenderWindow::SetDemo(Demos demo)
 {
 	assert(demo < Demos::COUNT);
@@ -136,6 +171,9 @@ LRESULT CALLBACK RenderWindow::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARA
 		case WM_CREATE:
 			return Wnd->OnCreate();
 
+		case WM_MOVE:
+			return Wnd->OnMove();
+
 		case WM_SIZE:
 			return Wnd->OnSize();
 
@@ -154,6 +192,10 @@ LRESULT RenderWindow::OnCreate()
 	toolWindow = std::make_shared<ToolWindow>(this);
 	if (toolWindow)
 		toolWindow->Create();
+	debugDataWindow = std::make_shared<DebugDataWindow>(hWnd, debugDataStore);
+	if (debugDataWindow)
+		debugDataWindow->Create();
+
 	return 0;
 }
 
@@ -161,6 +203,12 @@ LRESULT RenderWindow::OnDestroy()
 {
 	hWnd = nullptr;
 	PostQuitMessage(0);
+	return 0;
+}
+
+LRESULT RenderWindow::OnMove()
+{
+	UpdateDebugPosition();
 	return 0;
 }
 
@@ -174,6 +222,7 @@ LRESULT RenderWindow::OnSize()
 	if (activeRenderer)
 		activeRenderer->Resize(windowWidth, windowHeight);
 
+	UpdateDebugPosition();
 	return 0;
 }
 
