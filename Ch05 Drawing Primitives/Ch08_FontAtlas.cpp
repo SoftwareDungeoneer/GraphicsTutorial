@@ -260,7 +260,7 @@ void FontAtlas::RenderString(POINTF topleft, LPCTSTR lpsz, unsigned nChars, cons
 
 	D3D11_BUFFER_DESC bufferDesc;
 	ZeroInitialize(bufferDesc);
-	bufferDesc.ByteWidth = verts.size() * sizeof(Vertex);
+	bufferDesc.ByteWidth = static_cast<unsigned>(verts.size()) * sizeof(Vertex);
 	bufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
 	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 
@@ -270,7 +270,7 @@ void FontAtlas::RenderString(POINTF topleft, LPCTSTR lpsz, unsigned nChars, cons
 
 	pDevice->CreateBuffer(&bufferDesc, &srd, &*vb);
 
-	bufferDesc.ByteWidth = indices.size() * sizeof(short);
+	bufferDesc.ByteWidth = static_cast<unsigned>(indices.size() * sizeof(short));
 	bufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 	srd.pSysMem = indices.data();
 
@@ -324,7 +324,7 @@ void FontAtlas::RenderString(POINTF topleft, LPCTSTR lpsz, unsigned nChars, cons
 
 	pDeviceContext->OMSetBlendState(*alphaEnableBlendState, nullptr, 0xffffffff);
 	pDeviceContext->RSSetState(*pRSnew);
-	pDeviceContext->DrawIndexed(indices.size(), 0, 0);
+	pDeviceContext->DrawIndexed(static_cast<unsigned>(indices.size()), 0, 0);
 
 	pDeviceContext->OMSetBlendState(nullptr, nullptr, 0xffffffff);
 	//pDeviceContext->Draw(verts.size(), 0);

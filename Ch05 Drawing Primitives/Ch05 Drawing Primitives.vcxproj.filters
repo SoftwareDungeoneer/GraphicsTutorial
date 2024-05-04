@@ -58,6 +58,9 @@
     <ClCompile Include="FontLoader.cpp">
       <Filter>Utility</Filter>
     </ClCompile>
+    <ClCompile Include="DebugDataWindow.cpp">
+      <Filter>Windows</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ComPtr.h">
@@ -89,6 +92,12 @@
     <ClInclude Include="Ch08_FontAtlas.h" />
     <ClInclude Include="FontLoader.h">
       <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="DebugDataWindow.h">
+      <Filter>Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="AppLocalMessages.h">
+      <Filter>Windows</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

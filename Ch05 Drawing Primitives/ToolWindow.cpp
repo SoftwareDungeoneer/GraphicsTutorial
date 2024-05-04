@@ -226,7 +226,7 @@ LRESULT ToolWindow::OnPaint()
 	SetBkMode(ps.hdc, TRANSPARENT);
 	for (unsigned n{ 0 }; n < static_cast<unsigned>(eLabels::COUNT); ++n)
 	{
-		TextOut(ps.hdc, 5, labelPositions[n], labelStrings[n], _tcslen(labelStrings[n]));
+		TextOut(ps.hdc, 5, labelPositions[n], labelStrings[n], static_cast<int>(_tcslen(labelStrings[n])));
 	}
 
 	SelectObject(ps.hdc, hOldFont);

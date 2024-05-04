@@ -9,6 +9,7 @@
 #include <memory>
 #include <vector>
 
+#include "DebugDataWindow.h"
 #include "ToolWindow.h"
 #include "Renderer.h"
 
@@ -42,8 +43,11 @@ protected:
 
 	std::shared_ptr<Renderer> activeRenderer;
 	std::shared_ptr<ToolWindow> toolWindow{ nullptr };
+	std::shared_ptr<DebugDataWindow> debugDataWindow{ nullptr };
 
 private:
+	std::shared_ptr<DebugDataWindow::DataBlock> debugDataStore{ nullptr };
+
 	RenderWindow(RenderWindow&&) = delete;
 	RenderWindow(const RenderWindow&) = delete;
 	RenderWindow& operator=(RenderWindow&&) = delete;
@@ -56,6 +60,7 @@ private:
 	LRESULT OnCreate();
 	LRESULT OnDestroy();
 	LRESULT OnSize();
+	LRESULT OnNotifyDebugDataDestroyed();
 
 	static LPCTSTR kWindowClassName;
 };

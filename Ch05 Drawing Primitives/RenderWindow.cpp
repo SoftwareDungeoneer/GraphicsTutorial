@@ -8,6 +8,7 @@
 #include <random>
 #include <vector>
 
+#include "AppLocalMessages.h"
 #include "Renderer.h"
 #include "Ch03_FirstTriangle.h"
 #include "Ch04_MovingTriangles.h"
@@ -26,7 +27,9 @@ namespace
 }
 
 RenderWindow::RenderWindow()
-{}
+{
+	debugDataStore = std::make_shared<DebugDataWindow::DataBlock>();
+}
 
 RenderWindow::~RenderWindow()
 {}
@@ -138,6 +141,9 @@ LRESULT CALLBACK RenderWindow::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARA
 
 		case WM_DESTROY:
 			return Wnd->OnDestroy();
+
+		case AM_DEBUGDATA_DESTROYED:
+			return Wnd->OnNotifyDebugDataDestroyed();
 		}
 	}
 	return DefWindowProc(hWnd, msg, wParam, lParam);
@@ -168,5 +174,11 @@ LRESULT RenderWindow::OnSize()
 	if (activeRenderer)
 		activeRenderer->Resize(windowWidth, windowHeight);
 
+	return 0;
+}
+
+LRESULT RenderWindow::OnNotifyDebugDataDestroyed()
+{
+	debugDataWindow.reset();
 	return 0;
 }
