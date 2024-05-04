@@ -10,8 +10,8 @@
 
 struct FontData
 {
-	TEXTMETRIC tm;
-	BITMAPINFO bitmapInfo;
+	TEXTMETRIC tm{ 0 };
+	BITMAPINFO bitmapInfo{ 0 };
 	std::vector<BYTE> DIBits;
 	std::map<TCHAR, RECTF> glyphQuads;
 };
