@@ -149,10 +149,13 @@
     <ClCompile Include="Ch08_FontAtlas.cpp" />
     <ClCompile Include="DebugDataWindow.cpp" />
     <ClCompile Include="FontLoader.cpp" />
+    <ClCompile Include="GraphicsTutorialApp.cpp" />
     <ClCompile Include="Image.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="RenderWindow.cpp" />
+    <ClCompile Include="Settings.cpp" />
+    <ClCompile Include="SettingsDialog.cpp" />
     <ClCompile Include="ToolWindow.cpp" />
     <ClCompile Include="util.cpp" />
     <ClCompile Include="Vec2.cpp" />
@@ -168,9 +171,13 @@
     <ClInclude Include="ComPtr.h" />
     <ClInclude Include="DebugDataWindow.h" />
     <ClInclude Include="FontLoader.h" />
+    <ClInclude Include="GraphicsTutorialApp.h" />
     <ClInclude Include="Image.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="RenderWindow.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="Settings.h" />
+    <ClInclude Include="SettingsDialog.h" />
     <ClInclude Include="ToolWindow.h" />
     <ClInclude Include="util.h" />
     <ClInclude Include="Vec2.h" />
@@ -256,6 +263,9 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)%(Filename).psc</ObjectFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjectDir)%(Filename).psc</ObjectFileOutput>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Resource.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

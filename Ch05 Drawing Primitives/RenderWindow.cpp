@@ -20,6 +20,8 @@
 
 #include "util.h"
 
+#include "resource.h"
+
 LPCTSTR RenderWindow::kWindowClassName{ _T("Render Window") };
 
 namespace
@@ -69,7 +71,7 @@ void RenderWindow::RegisterWindowClass()
 		LoadIcon(NULL, IDI_APPLICATION),
 		LoadCursor(NULL, IDC_ARROW),
 		nullptr,
-		nullptr,
+		MAKEINTRESOURCE(IDM_MAIN_MENU),
 		kWindowClassName,
 		nullptr
 	};
@@ -171,6 +173,9 @@ LRESULT CALLBACK RenderWindow::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARA
 		case WM_CREATE:
 			return Wnd->OnCreate();
 
+		case WM_COMMAND:
+			return Wnd->OnCommand(wParam, lParam);
+
 		case WM_MOVE:
 			return Wnd->OnMove();
 
@@ -206,6 +211,24 @@ LRESULT RenderWindow::OnDestroy()
 	return 0;
 }
 
+LRESULT RenderWindow::OnCommand(WPARAM wParam, LPARAM lParam)
+{
+	WPARAM ctrlCode = HIWORD(wParam);
+	WPARAM id = LOWORD(wParam);
+	[[maybe_unused]] HWND hCtrl = ((HWND)lParam);
+
+	switch (id)
+	{
+	case IDM_FILE_EXIT:
+		return OnFileExit();
+
+	case IDM_VIEW_SETTINGS:
+		return OnViewSettings();
+	}
+
+	return DefWindowProc(hWnd, WM_COMMAND, wParam, lParam);
+}
+
 LRESULT RenderWindow::OnMove()
 {
 	UpdateDebugPosition();
@@ -229,5 +252,17 @@ LRESULT RenderWindow::OnSize()
 LRESULT RenderWindow::OnNotifyDebugDataDestroyed()
 {
 	debugDataWindow.reset();
+	return 0;
+}
+
+LRESULT RenderWindow::OnFileExit()
+{
+	PostMessage(hWnd, WM_DESTROY, 0, 0);
+	return 0;
+}
+
+LRESULT RenderWindow::OnViewSettings()
+{
+	MessageBox(hWnd, _T("No settings to show"), _T("Settings"), MB_OK);
 	return 0;
 }

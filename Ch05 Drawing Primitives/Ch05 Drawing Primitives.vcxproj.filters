@@ -61,6 +61,15 @@
     <ClCompile Include="DebugDataWindow.cpp">
       <Filter>Windows</Filter>
     </ClCompile>
+    <ClCompile Include="Settings.cpp">
+      <Filter>Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="SettingsDialog.cpp">
+      <Filter>Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsTutorialApp.cpp">
+      <Filter>Windows</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ComPtr.h">
@@ -99,6 +108,18 @@
     <ClInclude Include="AppLocalMessages.h">
       <Filter>Windows</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="Settings.h">
+      <Filter>Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="SettingsDialog.h">
+      <Filter>Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsTutorialApp.h">
+      <Filter>Windows</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Shaders">
@@ -130,5 +151,10 @@
     <Image Include="WhiteStarOnGreen.png">
       <Filter>Assets</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Resource.rc">
+      <Filter>Windows</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

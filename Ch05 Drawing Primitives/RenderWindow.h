@@ -62,10 +62,14 @@ private:
 	static LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM, LPARAM);
 	LRESULT OnCreate();
 	LRESULT OnDestroy();
+	LRESULT OnCommand(WPARAM, LPARAM);
 	LRESULT OnMove();
 	LRESULT OnSize();
 	LRESULT OnNotifyDebugDataDestroyed();
 
+	// Command handlers
+	LRESULT OnFileExit();
+	LRESULT OnViewSettings();
 	static LPCTSTR kWindowClassName;
 };
 
