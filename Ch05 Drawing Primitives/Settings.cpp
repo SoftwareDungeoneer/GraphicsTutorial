@@ -9,7 +9,7 @@ using namespace std;
 using ConfigSettings = map<string, string>;
 using ConfigMap = map<string, ConfigSettings>;
 
-void MapConfigToValues(const ConfigMap&, Settings*);
+void MapConfigToValues(const ConfigMap&, std::shared_ptr<Settings>);
 
 // String helper functions
 // trim from start (in place)
@@ -74,7 +74,7 @@ ostream& WriteWindowSettings(ostream& o, const POINT& p, const SIZE& s)
 	return o;
 }
 
-int Settings::Serialize(LPCTSTR filename, const Settings* pSettings)
+int Settings::Serialize(LPCTSTR filename, const std::shared_ptr<Settings> pSettings)
 {
 	ofstream ofile(filename, std::ios::trunc);
 	if (!ofile)
@@ -84,8 +84,8 @@ int Settings::Serialize(LPCTSTR filename, const Settings* pSettings)
 	ofile << kGeneralBlock << endl;
 	ofile << kGeneralRememberWindowPositions << "=" 
 		  << pSettings->RememberWindowPosition << endl;
-	ofile << kGeneralRememberWindowPositions  << "=" 
-		  << pSettings->RememberWindowPosition << endl;
+	ofile << kGeneralRememberWindowSize  << "=" 
+		  << pSettings->RememberWindowSize << endl;
 
 	ofile << kMainWindowBlock << endl;
 	WriteWindowSettings(ofile, pSettings->mainWindowPos, pSettings->mainWindowSize);
@@ -101,7 +101,7 @@ int Settings::Serialize(LPCTSTR filename, const Settings* pSettings)
 	return 1;
 }
 
-int Settings::Deserialize(LPCTSTR filename, Settings* pSettings)
+int Settings::Deserialize(LPCTSTR filename, std::shared_ptr<Settings> pSettings)
 {
 	ifstream ins(filename);
 
@@ -112,13 +112,9 @@ int Settings::Deserialize(LPCTSTR filename, Settings* pSettings)
 	{
 		if (line[0] == '[')
 		{
-			auto epos = line.find_first_of(']');
-			if (epos != string::npos)
-			{
-				currentSection = line.substr(1, epos);
-				trim(currentSection);
-				continue;
-			}
+			currentSection = line;
+			trim(currentSection);
+			continue;
 		}
 
 		auto eqPos = line.find_first_of('=');
@@ -133,10 +129,12 @@ int Settings::Deserialize(LPCTSTR filename, Settings* pSettings)
 		config[currentSection][key] = val;
 	}
 
+	MapConfigToValues(config, pSettings);
+
 	return 1;
 }
 
-void MapConfigToValues(const ConfigMap& config, Settings* settings)
+void MapConfigToValues(const ConfigMap& config, std::shared_ptr<Settings> settings)
 {
 	for (const auto& [blockStr, block] : config)
 	{

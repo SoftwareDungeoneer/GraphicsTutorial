@@ -11,9 +11,13 @@ namespace
 	LPCTSTR kClassPointerProp{ _T("Class Pointer") };
 }
 
-DebugDataWindow::DebugDataWindow(HWND rw, std::shared_ptr<DataBlock> _db) :
+DebugDataWindow::DebugDataWindow(
+	HWND rw,
+	std::shared_ptr<DataBlock> _db,
+	std::shared_ptr<Settings> _s) :
 	renderWindow(rw),
-	valueMap(_db)
+	valueMap(_db),
+	appSettings(_s)
 {
 }
 
@@ -97,15 +101,26 @@ HRESULT DebugDataWindow::CreateUIWindow()
 	DWORD window_styles = WS_OVERLAPPEDWINDOW | WS_VISIBLE;
 	RECT requested{ 0, 0, 800, 600 };
 	AdjustWindowRect(&requested, window_styles, FALSE);
-	int width = requested.right - requested.left;
-	int height = requested.bottom - requested.top;
+	int width = appSettings->debugWindowSize.cx;
+	int height = appSettings->debugWindowSize.cy;
+	
+	// Reset width and height
+	if (width == CW_USEDEFAULT || !(appSettings->RememberWindowSize))
+		width = requested.right - requested.left;
+	if (height == CW_USEDEFAULT || !(appSettings->RememberWindowSize))
+		height = requested.bottom - requested.top;
 
+	POINT pos{ appSettings->debugWindowPos };
+	if (!appSettings->RememberWindowPosition)
+		pos = { CW_USEDEFAULT, CW_USEDEFAULT };
 	hWnd = CreateWindow(
 		kWindowClassName,
 		kWindowClassName,
 		WS_OVERLAPPEDWINDOW | WS_VISIBLE,
-		CW_USEDEFAULT, CW_USEDEFAULT,
-		width, height,
+		pos.x,
+		pos.y,
+		width, 
+		height,
 		nullptr,
 		nullptr,
 		GetModuleHandle(NULL),
@@ -138,6 +153,12 @@ LRESULT CALLBACK DebugDataWindow::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LP
 		case WM_CREATE:
 			return Wnd->OnCreate();
 
+		case WM_MOVE:
+			return Wnd->OnMove();
+
+		case WM_SIZE:
+			return Wnd->OnSize();
+
 		case WM_DESTROY:
 			return Wnd->OnDestroy();
 
@@ -161,6 +182,25 @@ LRESULT DebugDataWindow::OnDestroy()
 	return 0;
 }
 
+LRESULT DebugDataWindow::OnMove()
+{
+	RECT rWnd;
+	GetWindowRect(hWnd, &rWnd);
+	appSettings->debugWindowPos = { rWnd.left, rWnd.top };
+	return 0;
+}
+
+LRESULT DebugDataWindow::OnSize()
+{
+	RECT rWnd;
+	GetWindowRect(hWnd, &rWnd);
+	auto windowWidth = rWnd.right - rWnd.left;
+	auto windowHeight = rWnd.bottom - rWnd.top;
+
+	appSettings->debugWindowSize = { windowWidth, windowHeight };
+
+	return 0;
+}
 LRESULT DebugDataWindow::OnPaint()
 {
 	RECT rClient;

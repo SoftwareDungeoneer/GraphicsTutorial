@@ -20,6 +20,9 @@ int WINAPI WinMain(
 {
 	CoInitializeEx(NULL, COINIT_MULTITHREADED);
 
+	std::shared_ptr<Settings> globalSettings = std::make_shared<Settings>(Settings::GetDefaultSettings());
+	Settings::Deserialize(_T("config.ini"), globalSettings);
+
 	LARGE_INTEGER qptLi;
 	QueryPerformanceFrequency(&qptLi);
 	double qptFrequency = 1.0 * qptLi.QuadPart;
@@ -27,7 +30,7 @@ int WINAPI WinMain(
 	QueryPerformanceCounter(&qptLi);
 	double qptStartup{ qptLi.QuadPart / qptFrequency };
 
-	std::shared_ptr<RenderWindow> mainWindow = std::make_shared<RenderWindow>();
+	std::shared_ptr<RenderWindow> mainWindow = std::make_shared<RenderWindow>(globalSettings);
 	mainWindow->Create();
 
 	LARGE_INTEGER qptLastUpdate;
@@ -50,5 +53,7 @@ int WINAPI WinMain(
 	}
 
 	mainWindow.reset();
+
+	Settings::Serialize(_T("config.ini"), globalSettings);
 	CoUninitialize();
 }

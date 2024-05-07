@@ -5,13 +5,16 @@
 #include <Windows.h>
 
 #include <array>
+#include <memory>
+
+#include "Settings.h"
 
 class RenderWindow;
 
 class ToolWindow
 {
 public:
-	ToolWindow(RenderWindow* rw);
+	ToolWindow(RenderWindow* rw, std::shared_ptr<Settings> _s);
 	~ToolWindow();
 
 	void Create();
@@ -42,9 +45,12 @@ private:
 
 	RenderWindow* pRenderWindow;
 
+	std::shared_ptr<Settings> appSettings;
+
 	static LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM, LPARAM);
 	LRESULT OnCreate();
 	LRESULT OnDestroy();
+	LRESULT OnMove();
 	LRESULT OnSize();
 	LRESULT OnPaint();
 	LRESULT OnCommand(WPARAM, LPARAM);

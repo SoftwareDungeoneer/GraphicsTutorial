@@ -4,6 +4,8 @@
 
 #include <Windows.h>
 
+#include <memory>
+
 struct Settings
 {
 	union {
@@ -23,8 +25,8 @@ struct Settings
 
 	static Settings GetDefaultSettings();
 
-	static int Serialize(LPCTSTR filename, const Settings* pSettings);
-	static int Deserialize(LPCTSTR filename, Settings* pSettings);
+	static int Serialize(LPCTSTR filename, const std::shared_ptr<Settings> pSettings);
+	static int Deserialize(LPCTSTR filename, std::shared_ptr<Settings> pSettings);
 };
 
 

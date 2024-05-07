@@ -67,9 +67,6 @@
     <ClCompile Include="SettingsDialog.cpp">
       <Filter>Windows</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicsTutorialApp.cpp">
-      <Filter>Windows</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ComPtr.h">
@@ -115,9 +112,6 @@
       <Filter>Windows</Filter>
     </ClInclude>
     <ClInclude Include="SettingsDialog.h">
-      <Filter>Windows</Filter>
-    </ClInclude>
-    <ClInclude Include="GraphicsTutorialApp.h">
       <Filter>Windows</Filter>
     </ClInclude>
   </ItemGroup>

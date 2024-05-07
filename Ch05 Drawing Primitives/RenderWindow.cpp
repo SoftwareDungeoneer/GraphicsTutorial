@@ -36,7 +36,7 @@ namespace
 	}
 }
 
-RenderWindow::RenderWindow()
+RenderWindow::RenderWindow(std::shared_ptr<Settings> _s) :appSettings(_s)
 {
 	debugDataStore = std::make_shared<DebugDataWindow::DataBlock>();
 }
@@ -82,17 +82,21 @@ void RenderWindow::RegisterWindowClass()
 HRESULT RenderWindow::CreateUIWindow()
 {
 	DWORD window_styles = WS_OVERLAPPEDWINDOW | WS_VISIBLE;
-	RECT requested{ 0, 0, 800, 600 };
-	AdjustWindowRect(&requested, window_styles, FALSE);
-	int width = requested.right - requested.left;
-	int height = requested.bottom - requested.top;
+	
+	RECT requested;
+	AdjustWindowRect(&requested, window_styles, TRUE);
 
+	auto [cx, cy] = appSettings->mainWindowSize;
+	if (cx == CW_USEDEFAULT) cx = requested.right - requested.left;
+	if (cy == CW_USEDEFAULT) cy = requested.bottom - requested.top;
 	hWnd = CreateWindow(
 		kWindowClassName,
 		kWindowClassName,
 		WS_OVERLAPPEDWINDOW | WS_VISIBLE,
-		CW_USEDEFAULT, CW_USEDEFAULT,
-		width, height,
+		appSettings->mainWindowPos.x,
+		appSettings->mainWindowPos.y,
+		cx,
+		cy,
 		nullptr,
 		nullptr,
 		GetModuleHandle(NULL),
@@ -118,14 +122,20 @@ void RenderWindow::UpdateDebugInfo(const std::string& key, const std::string& va
 	}
 }
 
-void RenderWindow::UpdateDebugPosition()
+void RenderWindow::UpdatePosition()
 {
 	RECT rWnd;
 	RECT rClient;
 	GetWindowRect(hWnd, &rWnd);
 	GetClientRect(hWnd, &rClient);
 	std::ostringstream oss;
-	oss << rWnd << "(" << (rWnd.right - rWnd.left) << " x " << (rWnd.bottom - rWnd.top) << ")";
+	auto windowWidth = rWnd.right - rWnd.left;
+	auto windowHeight = rWnd.bottom - rWnd.top;
+
+	appSettings->mainWindowPos = { rWnd.left, rWnd.top };
+	appSettings->mainWindowSize = { windowWidth, windowHeight };
+
+	oss << rWnd << "(" << windowWidth << " x " << windowHeight << ")";
 	UpdateDebugInfo("Window Position", oss.str());
 
 	oss.str("");
@@ -194,10 +204,10 @@ LRESULT CALLBACK RenderWindow::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARA
 
 LRESULT RenderWindow::OnCreate()
 {
-	toolWindow = std::make_shared<ToolWindow>(this);
+	toolWindow = std::make_shared<ToolWindow>(this, appSettings);
 	if (toolWindow)
 		toolWindow->Create();
-	debugDataWindow = std::make_shared<DebugDataWindow>(hWnd, debugDataStore);
+	debugDataWindow = std::make_shared<DebugDataWindow>(hWnd, debugDataStore, appSettings);
 	if (debugDataWindow)
 		debugDataWindow->Create();
 
@@ -231,7 +241,7 @@ LRESULT RenderWindow::OnCommand(WPARAM wParam, LPARAM lParam)
 
 LRESULT RenderWindow::OnMove()
 {
-	UpdateDebugPosition();
+	UpdatePosition();
 	return 0;
 }
 
@@ -245,7 +255,8 @@ LRESULT RenderWindow::OnSize()
 	if (activeRenderer)
 		activeRenderer->Resize(windowWidth, windowHeight);
 
-	UpdateDebugPosition();
+	UpdatePosition();
+
 	return 0;
 }
 

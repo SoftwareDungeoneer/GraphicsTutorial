@@ -12,11 +12,12 @@
 #include "DebugDataWindow.h"
 #include "ToolWindow.h"
 #include "Renderer.h"
+#include "Settings.h"
 
 class RenderWindow
 {
 public:
-	RenderWindow();
+	RenderWindow(std::shared_ptr<Settings>);
 	~RenderWindow();
 
 	HRESULT Create();
@@ -46,6 +47,7 @@ protected:
 	std::shared_ptr<DebugDataWindow> debugDataWindow{ nullptr };
 
 private:
+	std::shared_ptr<Settings> appSettings;
 	std::shared_ptr<DebugDataWindow::DataBlock> debugDataStore{ nullptr };
 
 	RenderWindow(RenderWindow&&) = delete;
@@ -57,7 +59,7 @@ private:
 	HRESULT CreateUIWindow();
 
 	void UpdateDebugInfo(const std::string& key, const std::string& value);
-	void UpdateDebugPosition();
+	void UpdatePosition();
 
 	static LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM, LPARAM);
 	LRESULT OnCreate();

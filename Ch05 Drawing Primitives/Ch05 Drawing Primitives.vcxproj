@@ -149,7 +149,6 @@
     <ClCompile Include="Ch08_FontAtlas.cpp" />
     <ClCompile Include="DebugDataWindow.cpp" />
     <ClCompile Include="FontLoader.cpp" />
-    <ClCompile Include="GraphicsTutorialApp.cpp" />
     <ClCompile Include="Image.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Renderer.cpp" />
@@ -171,7 +170,6 @@
     <ClInclude Include="ComPtr.h" />
     <ClInclude Include="DebugDataWindow.h" />
     <ClInclude Include="FontLoader.h" />
-    <ClInclude Include="GraphicsTutorialApp.h" />
     <ClInclude Include="Image.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="RenderWindow.h" />

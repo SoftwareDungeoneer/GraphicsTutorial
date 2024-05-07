@@ -8,6 +8,8 @@
 #include <memory>
 #include <string>
 
+#include "Settings.h"
+
 class DebugDataWindow
 {
 private:
@@ -25,7 +27,11 @@ private:
 public:
 	using DataBlock = std::map<std::string, std::pair<std::map<std::string, std::string>, SectionParams>>;
 
-	DebugDataWindow(HWND rw, std::shared_ptr<DataBlock> _db);
+	DebugDataWindow(
+		HWND rw,
+		std::shared_ptr<DataBlock> _db,
+		std::shared_ptr<Settings> _s
+	);
 	~DebugDataWindow();
 
 	HRESULT Create();
@@ -45,6 +51,7 @@ private:
 	HWND hWnd{ 0 };
 	HWND renderWindow{ 0 };
 	std::shared_ptr<DataBlock> valueMap;
+	std::shared_ptr<Settings> appSettings;
 
 	DebugDataWindow(DebugDataWindow&&) = delete;
 	DebugDataWindow(const DebugDataWindow&) = delete;
@@ -57,6 +64,8 @@ private:
 	static LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM, LPARAM);
 	LRESULT OnCreate();
 	LRESULT OnDestroy();
+	LRESULT OnMove();
+	LRESULT OnSize();
 	LRESULT OnPaint();
 
 	static LPCTSTR kWindowClassName;

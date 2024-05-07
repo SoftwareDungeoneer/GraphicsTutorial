@@ -27,7 +27,9 @@ const std::array<LPCTSTR, static_cast<size_t>(RenderWindow::Demos::COUNT)> DemoS
 	_T("Font Atlas")
 };
 
-ToolWindow::ToolWindow(RenderWindow* rw):pRenderWindow(rw)
+ToolWindow::ToolWindow(RenderWindow* rw, std::shared_ptr<Settings> _s):
+	pRenderWindow(rw),
+	appSettings(_s)
 {
 	ZeroInitialize(uiFontMetrics);
 }
@@ -73,7 +75,8 @@ void ToolWindow::CreateUIWindow()
 		kWindowClassName,
 		kWindowClassName,
 		window_styles,
-		CW_USEDEFAULT, CW_USEDEFAULT,
+		appSettings->toolWindowPos.x,
+		appSettings->toolWindowPos.y,
 		width, height,
 		nullptr,
 		nullptr,
@@ -101,6 +104,9 @@ LRESULT CALLBACK ToolWindow::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 		{
 		case WM_CREATE:
 			return Wnd->OnCreate();
+
+		case WM_MOVE:
+			return Wnd->OnMove();
 
 		case WM_SIZE:
 			return Wnd->OnSize();
@@ -184,10 +190,22 @@ LRESULT ToolWindow::OnDestroy()
 	return 0;
 }
 
+LRESULT ToolWindow::OnMove()
+{
+	RECT rWnd;
+	GetWindowRect(hWnd, &rWnd);
+	appSettings->toolWindowPos = { rWnd.left, rWnd.top };
+	return 0;
+}
+
 LRESULT ToolWindow::OnSize()
 {
 	RECT rClient;
+	RECT rWnd;
 	GetClientRect(hWnd, &rClient);
+	GetWindowRect(hWnd, &rWnd);
+
+	appSettings->toolWindowSize = { rWnd.right - rWnd.left, rWnd.bottom - rWnd.top };
 
 	const unsigned rightMargin{ 5 };
 	const unsigned leftMargin{ 5 };
