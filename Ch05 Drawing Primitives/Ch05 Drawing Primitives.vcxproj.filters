@@ -67,6 +67,7 @@
     <ClCompile Include="SettingsDialog.cpp">
       <Filter>Windows</Filter>
     </ClCompile>
+    <ClCompile Include="Ch09_DepthBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ComPtr.h">
@@ -114,6 +115,7 @@
     <ClInclude Include="SettingsDialog.h">
       <Filter>Windows</Filter>
     </ClInclude>
+    <ClInclude Include="Ch09_DepthBuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Shaders">
@@ -150,5 +152,13 @@
     <ResourceCompile Include="Resource.rc">
       <Filter>Windows</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Ch09_Depth2D.ps">
+      <Filter>Shaders\Pixel</Filter>
+    </None>
+    <None Include="Ch09_Depth2D.vs">
+      <Filter>Shaders\Vertex</Filter>
+    </None>
   </ItemGroup>
 </Project>
