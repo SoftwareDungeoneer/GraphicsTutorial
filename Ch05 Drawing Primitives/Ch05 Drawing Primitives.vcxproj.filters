@@ -28,6 +28,15 @@
     <FxCompile Include="Ch08_BasicFont.ps">
       <Filter>Shaders\Pixel</Filter>
     </FxCompile>
+    <FxCompile Include="FullscreenQuad.vs">
+      <Filter>Shaders\Vertex</Filter>
+    </FxCompile>
+    <FxCompile Include="Ch09_Depth2D.vs">
+      <Filter>Shaders\Vertex</Filter>
+    </FxCompile>
+    <FxCompile Include="Ch09_Depth2D.ps">
+      <Filter>Shaders\Pixel</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -152,13 +161,5 @@
     <ResourceCompile Include="Resource.rc">
       <Filter>Windows</Filter>
     </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Ch09_Depth2D.ps">
-      <Filter>Shaders\Pixel</Filter>
-    </None>
-    <None Include="Ch09_Depth2D.vs">
-      <Filter>Shaders\Vertex</Filter>
-    </None>
   </ItemGroup>
 </Project>
