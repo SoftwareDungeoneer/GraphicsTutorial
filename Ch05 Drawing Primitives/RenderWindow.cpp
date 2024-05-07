@@ -17,6 +17,7 @@
 #include "Ch06_PolyLines.h"
 #include "Ch07_Textures.h"
 #include "Ch08_FontAtlas.h"
+#include "Ch09_DepthBuffer.h"
 
 #include "util.h"
 
@@ -154,6 +155,7 @@ void RenderWindow::SetDemo(Demos demo)
 		{ [](PtrT& ptr, HWND h) -> void { ptr = std::make_shared<PolyLines>(h); } },
 		{ [](PtrT& ptr, HWND h) -> void { ptr = std::make_shared<Textures>(h); } },
 		{ [](PtrT& ptr, HWND h) -> void { ptr = std::make_shared<FontAtlas>(h); } },
+		{ [](PtrT& ptr, HWND h) -> void { ptr = std::make_shared<DepthBuffer>(h); }}
 	};
 	static_assert(countof(thunks) == static_cast<unsigned>(Demos::COUNT));
 	if (demo < Demos::COUNT)

@@ -17,6 +17,15 @@ void DepthBuffer::Initialize()
 	pDevice->CreatePixelShader(fullscreenPsBytes.data(), fullscreenPsBytes.size(), nullptr, &*fullscreenPS);
 
 	CreateTextureRenderTarget();
+
+	D3D11_SAMPLER_DESC samplerDesc;
+	ZeroInitialize(samplerDesc);
+	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT;
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+	samplerDesc.MipLODBias = 0.f;
+	pDevice->CreateSamplerState(&samplerDesc, &*fullscreenSampler);
 }
 
 void DepthBuffer::CreateTextureRenderTarget()
@@ -40,7 +49,7 @@ void DepthBuffer::CreateTextureRenderTarget()
 	ZeroInitialize(srvDesc);
 	srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-	srvDesc.Texture2D = { 1, 0 };
+	srvDesc.Texture2D = { 0, 1 };
 	pDevice->CreateShaderResourceView(*renderTexture, &srvDesc, &*renderTextureSRV);
 
 	D3D11_RENDER_TARGET_VIEW_DESC rtvDesc;
@@ -55,6 +64,7 @@ void DepthBuffer::Update(double elapsed)
 {
 	if (!enableUpdate)
 		Initialize();
+	enableUpdate = true;
 }
 
 void DepthBuffer::Render()
@@ -68,6 +78,7 @@ void DepthBuffer::Render()
 	pDeviceContext->VSSetShader(*fullscreenVS, nullptr, 0);
 	pDeviceContext->PSSetShader(*fullscreenPS, nullptr, 0);
 	pDeviceContext->PSSetShaderResources(0, 1, &*renderTextureSRV);
+	pDeviceContext->PSSetSamplers(0, 1, &*fullscreenSampler);
 
 	ComPtr<ID3D11Texture2D> pBackBuffer;
 	ComPtr<ID3D11RenderTargetView> pRenderTarget;

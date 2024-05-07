@@ -38,6 +38,7 @@ private:
 
 	ComPtr<ID3D11VertexShader> fullscreenVS;
 	ComPtr<ID3D11PixelShader> fullscreenPS;
+	ComPtr<ID3D11SamplerState> fullscreenSampler;
 
 	ComPtr<ID3D11Texture2D> renderTexture;
 	ComPtr<ID3D11RenderTargetView> renderTargetView;

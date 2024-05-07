@@ -31,6 +31,7 @@ public:
 		PolyLines,
 		Textures,
 		FontAtlas,
+		DepthBuffer,
 
 		COUNT
 	};
