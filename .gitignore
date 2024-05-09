@@ -380,3 +380,5 @@ FodyWeavers.xsd
 /Ch05 Drawing Primitives/ClientToNdc.cso
 /Ch05 Drawing Primitives/RegularPolyVS.cso
 /Ch05 Drawing Primitives/SolidFill.cso
+/Ch05 Drawing Primitives/TexturedQuad.psc
+/Ch05 Drawing Primitives/TexturedQuad.vsc

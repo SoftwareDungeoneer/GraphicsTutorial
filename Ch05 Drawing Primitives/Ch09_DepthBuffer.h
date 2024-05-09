@@ -21,7 +21,7 @@ public:
 	struct Vertex
 	{
 		float Pos[3]{ 0, 0, 0 };
-		float Texcoord[2]{ 0, 0 };
+		float Color[4]{ 0, 0, 0, 1 };
 
 		static const D3D11_INPUT_ELEMENT_DESC desc[];
 	};
@@ -30,15 +30,21 @@ protected:
 	virtual void Initialize();
 
 private:
+	void CreateVertexBuffer();
 	void CreateTextureRenderTarget();
+	void CreateDepthStencilAndState();
 
-	ComPtr<ID3D11VertexShader> vertexShader;
-	ComPtr<ID3D11PixelShader> pixelShader;
+	ComPtr<ID3D11VertexShader> depthVertexShader;
+	ComPtr<ID3D11PixelShader> depthPixelShader;
 	ComPtr<ID3D11InputLayout> inputLayout;
 
 	ComPtr<ID3D11VertexShader> fullscreenVS;
 	ComPtr<ID3D11PixelShader> fullscreenPS;
 	ComPtr<ID3D11SamplerState> fullscreenSampler;
+
+	ComPtr<ID3D11PixelShader> depthPS;
+
+	ComPtr<ID3D11Buffer> vertexBuffer;
 
 	ComPtr<ID3D11Texture2D> renderTexture;
 	ComPtr<ID3D11RenderTargetView> renderTargetView;
@@ -46,9 +52,10 @@ private:
 
 	ComPtr<ID3D11Texture2D> depthTexture;
 	ComPtr<ID3D11DepthStencilView> depthStencilView;
+	ComPtr<ID3D11ShaderResourceView> depthStencilSRV;
 	ComPtr<ID3D11DepthStencilState> depthStencilState;
 
-	std::array<Vertex, 9> verts;
+	static const std::array<Vertex, 9> verts;
 };
 
 #endif // GRAPHICS_TUTORIAL_CH09_DEPTH_BUFFER_H

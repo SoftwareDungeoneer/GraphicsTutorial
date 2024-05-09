@@ -37,6 +37,9 @@
     <FxCompile Include="Ch09_Depth2D.ps">
       <Filter>Shaders\Pixel</Filter>
     </FxCompile>
+    <FxCompile Include="DepthToGray.ps">
+      <Filter>Shaders\Pixel</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
