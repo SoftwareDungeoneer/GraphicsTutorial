@@ -3,6 +3,7 @@
 #pragma once
 
 #include <cmath>
+class Mtx2x2;
 
 class Vec2 {
 public:
@@ -88,5 +89,22 @@ inline Vec2 operator-(const Vec2& lhs, const Vec2& rhs) { return Sub(lhs, rhs); 
 inline Vec2 operator*(float lhs, const Vec2& rhs) { return Scale(lhs, rhs); }
 inline Vec2 operator*(const Vec2& lhs, float rhs) { return Scale(rhs, lhs); }
 inline float operator*(const Vec2& lhs, const Vec2& rhs) { return Dot(lhs, rhs); }
+
+inline Vec2 NormalVector(const Vec2& v)
+{
+	return { -v.y, v.x };
+}
+
+inline Vec2 Antinormal(const Vec2& v)
+{
+	return { v.y, -v.x };
+}
+
+inline Vec2 ComponentMultiply(const Vec2& u, const Vec2& v)
+{
+	return { u.x * v.x, u.y * v.y };
+}
+
+Mtx2x2 OuterProduct(const Vec2& u, const Vec2& v);
 
 #endif // GRAPHICS_TUTORIAL_VEC2D_H

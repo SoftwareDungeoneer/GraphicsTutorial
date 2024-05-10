@@ -10,6 +10,8 @@
 #include "Ch06_PolyLines.h"
 #include "util.h"
 
+#include "Mtx2x2.h"
+
 constexpr TCHAR kWindowClassName[] = _T("Graphics Tutorial Window");
 
 int WINAPI WinMain(

@@ -80,6 +80,9 @@
       <Filter>Windows</Filter>
     </ClCompile>
     <ClCompile Include="Ch09_DepthBuffer.cpp" />
+    <ClCompile Include="Mtx2x2.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ComPtr.h">
@@ -128,6 +131,9 @@
       <Filter>Windows</Filter>
     </ClInclude>
     <ClInclude Include="Ch09_DepthBuffer.h" />
+    <ClInclude Include="Mtx2x2.h">
+      <Filter>Math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Shaders">
