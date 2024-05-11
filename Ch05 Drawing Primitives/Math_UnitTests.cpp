@@ -135,121 +135,151 @@ namespace UnitTests::Math::Utility
 
 	bool test_sgn_positive_float()
 	{
-		return false;
+		float f = +15.3f;
+		return sgn(f) == 1.0f;
 	}
 
 	bool test_sgn_positive_double()
 	{
-		return false;
+		double d = 47.99;
+		return sgn(d) == 1.0;
 	}
 
 	bool test_sgn_positive_int()
 	{
-		return false;
+		int i = 52;
+		return sgn(i) == 1;
 	}
 
 	bool test_sgn_positive_uint()
 	{
-		return false;
+		unsigned n = 42;
+		return sgn(n) == 1;
 	}
 
 	bool test_sgn_negative_float()
 	{
-		return false;
+		float f = -24.25;
+		return sgn(f) == -1.f;
 	}
 
 	bool test_sgn_negative_double()
 	{
-		return false;
+		double d = -42.99;
+		return sgn(d) == -1.0;
 	}
 
 	bool test_sgn_negative_int()
 	{
-		return false;
+		int i = -42;
+		return sgn(i) == -1;
 	}
 
 	bool test_sgn_zero_float()
 	{
-		return false;
+		float f = 0;
+		return sgn(f) == 0.f;
 	}
 
 	bool test_sgn_zero_double()
 	{
-		return false;
+		float d = 0;
+		return sgn(d) == 0.0;
 	}
 
 	bool test_sgn_zero_int()
 	{
-		return false;
+		int i = 0;
+		return sgn(i) == 0;
 	}
 
 	bool test_sgn_zero_uint()
 	{
-		return false;
+		unsigned n = 0;
+		return sgn(n) == 0;
 	}
 
 	bool test_flt_cmp_rel_near_true()
 	{
-		return false;
+		float a = 1.0f;
+		float b = 0;
+		for (int i = 0; i < 10; ++i)
+			b += 0.1f;
+		return flt_cmp_rel(a, b);
 	}
 
 	bool test_flt_cmp_rel_near_false()
 	{
-		return false;
+		float a = 1.0f;
+		float b = a + 4 * std::numeric_limits<float>::epsilon();
+		return flt_cmp_rel(a, b) == false;
 	}
 
 	bool test_flt_cmp_rel_far_true()
 	{
-		return false;
+		float a = 4.0;
+		float b = 4.005f;
+		return flt_cmp_rel(a, b, 0.002f);
 	}
 
 	bool test_flt_cmp_rel_far_false()
 	{
-		return false;
+		float a   = 15.2f;
+		float b   = 15.2155f;
+		float rel =  0.001f;
+		return flt_cmp_rel(a, b, rel) == false;
 	}
 
 	bool test_flt_cmp_zero()
 	{
-		return false;
+		return flt_cmp_rel(0.f, 0.f);
 	}
 
 	bool test_flt_cmp_pos_neg_zero()
 	{
-		return false;
+		return flt_cmp_rel(+0.0f, -0.0f);
 	}
 
 	bool test_flt_cmp_abs_positive()
 	{
-		return false;
+		float a = 4.0f;
+		float b = 4.001f;
+		return flt_cmp_abs(a, b, 0.001f);
 	}
 
 	bool test_flt_cmp_abs_negative()
 	{
-		return false;
+		float a = -16.2f;
+		float b = -16.2001f;
+		return flt_cmp_abs(a, b, 0.001f);
 	}
 
 	bool test_flt_cmp_abs_zero()
 	{
-		return false;
+		return flt_cmp_abs(0.0f, 0.0f);
 	}
 
 	bool test_flt_cmp_abs_mixed()
 	{
-		return false;
+		return flt_cmp_abs(+0.0f, -0.0f);
 	}
 
 	bool test_flt_dist_ulp()
 	{
-		return false;
+		unsigned ulp = flt_dist_ulp(4.0f, 4.0f + FLT_EPSILON * 4);
+		return ulp == 1;
 	}
 
 	bool test_flt_dist_ulp_pos_neg_zero()
 	{
-		return false;
+		unsigned ulp = flt_dist_ulp(+0.0f, -0.0f);
+		return ulp == 0;
 	}
 
 	bool test_flt_dist_ulp_equal()
 	{
-		return false;
+		float a = 42.99024f;
+		unsigned ulp = flt_dist_ulp(a, a);
+		return ulp == 0;
 	}
 }
