@@ -52,6 +52,9 @@ public:
 	inline Vec2& operator-=(const Vec2& rhs) { Sub(rhs); return *this; }
 	inline Vec2& operator*=(float rhs) { Scale(rhs); return *this; }
 
+	inline bool operator==(const Vec2& rhs) {
+
+	}
 	float x, y;
 
 	static const Vec2 X_AXIS;

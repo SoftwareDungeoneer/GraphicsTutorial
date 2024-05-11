@@ -2,6 +2,7 @@
 
 #include <tchar.h>
 
+#include <iostream>
 #include <type_traits>
 #include <memory>
 
@@ -12,6 +13,8 @@
 
 #include "Mtx2x2.h"
 
+#include "Math_UnitTests.h"
+
 constexpr TCHAR kWindowClassName[] = _T("Graphics Tutorial Window");
 
 int WINAPI WinMain(
@@ -21,6 +24,22 @@ int WINAPI WinMain(
 	int)
 {
 	CoInitializeEx(NULL, COINIT_MULTITHREADED);
+
+	HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
+	if (hStdOut == NULL || hStdOut == INVALID_HANDLE_VALUE)
+	{
+		hStdOut = CreateFile(
+			_T("output.txt"),
+			GENERIC_WRITE, 
+			0,
+			nullptr, 
+			CREATE_ALWAYS,
+			FILE_ATTRIBUTE_NORMAL,
+			nullptr);
+		SetStdHandle(STD_OUTPUT_HANDLE, hStdOut);
+	}
+
+	UnitTests::Math::run_all(nullptr, nullptr);
 
 	std::shared_ptr<Settings> globalSettings = std::make_shared<Settings>(Settings::GetDefaultSettings());
 	Settings::Deserialize(_T("config.ini"), globalSettings);

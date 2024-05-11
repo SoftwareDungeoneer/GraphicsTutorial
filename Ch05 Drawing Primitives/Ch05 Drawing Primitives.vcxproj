@@ -152,6 +152,7 @@
     <ClCompile Include="FontLoader.cpp" />
     <ClCompile Include="Image.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Math_UnitTests.cpp" />
     <ClCompile Include="Mtx2x2.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="RenderWindow.cpp" />
@@ -160,6 +161,7 @@
     <ClCompile Include="ToolWindow.cpp" />
     <ClCompile Include="util.cpp" />
     <ClCompile Include="Vec2.cpp" />
+    <ClCompile Include="Vec2_UnitTests.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppLocalMessages.h" />
@@ -174,6 +176,8 @@
     <ClInclude Include="DebugDataWindow.h" />
     <ClInclude Include="FontLoader.h" />
     <ClInclude Include="Image.h" />
+    <ClInclude Include="MathUtil.h" />
+    <ClInclude Include="Math_UnitTests.h" />
     <ClInclude Include="Mtx2x2.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="RenderWindow.h" />

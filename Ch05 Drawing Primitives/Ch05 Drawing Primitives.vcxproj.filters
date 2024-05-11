@@ -83,6 +83,12 @@
     <ClCompile Include="Mtx2x2.cpp">
       <Filter>Math</Filter>
     </ClCompile>
+    <ClCompile Include="Math_UnitTests.cpp">
+      <Filter>Math\Unit Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="Vec2_UnitTests.cpp">
+      <Filter>Math\Unit Tests</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ComPtr.h">
@@ -134,6 +140,12 @@
     <ClInclude Include="Mtx2x2.h">
       <Filter>Math</Filter>
     </ClInclude>
+    <ClInclude Include="MathUtil.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Math_UnitTests.h">
+      <Filter>Math\Unit Tests</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Shaders">
@@ -159,6 +171,9 @@
     </Filter>
     <Filter Include="Assets">
       <UniqueIdentifier>{1829e50a-8f90-4413-95e5-45addf9a299b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Math\Unit Tests">
+      <UniqueIdentifier>{7712c297-bf1b-4587-a555-9135508c8bff}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
