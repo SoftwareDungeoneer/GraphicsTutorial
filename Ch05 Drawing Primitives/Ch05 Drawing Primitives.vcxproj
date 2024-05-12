@@ -154,6 +154,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Math_UnitTests.cpp" />
     <ClCompile Include="Mtx2x2.cpp" />
+    <ClCompile Include="Mtx2x2_UnitTests.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="RenderWindow.cpp" />
     <ClCompile Include="Settings.cpp" />

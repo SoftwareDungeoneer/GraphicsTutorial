@@ -89,6 +89,9 @@
     <ClCompile Include="Vec2_UnitTests.cpp">
       <Filter>Math\Unit Tests</Filter>
     </ClCompile>
+    <ClCompile Include="Mtx2x2_UnitTests.cpp">
+      <Filter>Math\Unit Tests</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ComPtr.h">

@@ -178,7 +178,7 @@ namespace UnitTests::Math::Vec2Tests
 	{
 		Vec2 u{ 3.0f, -2.0f };
 		Mtx2x2 product = OuterProduct(u, u);
-		return false;
+		return product == Mtx2x2{ 9, -6, -6, 4 };
 	}
 
 	bool test_non_member_oper_add() 

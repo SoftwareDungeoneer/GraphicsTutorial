@@ -28,6 +28,7 @@ namespace UnitTests::Math
 		const std::map<std::string, run_function> run_fns = {
 			{ "Math utility functions", UnitTests::Math::Utility::run_all },
 			{ "Math -- 2D Vector", UnitTests::Math::Vec2Tests::run_all },
+			{ "Math -- 2x2 Matrix", UnitTests::Math::Mtx2x2Tests::run_all },
 		};
 
 		unsigned total_passed{ 0 };
@@ -79,7 +80,13 @@ namespace UnitTests::Math
 		if (outHandle && outHandle != INVALID_HANDLE_VALUE)
 		{
 			DWORD dwWritten{ 0 };
-			WriteFile(outHandle, oss.str().data(), oss.str().size(), &dwWritten, nullptr);
+			WriteFile(
+				outHandle, 
+				oss.str().data(),
+				static_cast<unsigned>(oss.str().size()),
+				&dwWritten, 
+				nullptr
+			);
 		}
 	}
 }

@@ -68,6 +68,41 @@ namespace UnitTests::Math
 		bool test_non_member_oper_dot();
 	}
 
+	namespace Mtx2x2Tests
+	{
+		void run_all(unsigned* pSucceeded, unsigned* pFailed);
+
+		bool test_scale();
+		bool test_add();
+		bool test_sub();
+		bool test_normalize();
+		bool test_transpose();
+		bool test_determinant();
+		bool test_inverse();
+		bool test_rotation();
+		bool test_accessors();
+		bool test_vec2_op_parens();
+		bool test_float_op_parens();
+		bool test_oper_add_eq();
+		bool test_oper_sub_eq();
+		bool test_oper_scale_eq();
+		bool test_non_member_det();
+		bool test_non_member_scale();
+		bool test_non_member_add();
+		bool test_non_member_sub();
+		bool test_non_member_mul();
+		bool test_non_member_post_pultiply();
+		bool test_non_member_normalize();
+		bool test_non_member_transpose();
+		bool test_non_member_hadamard_product();
+		bool test_oper_add();
+		bool test_oper_sub();
+		bool test_oper_scale_left();
+		bool test_oper_scale_right();
+		bool test_oper_mul();
+		bool test_oper_post_multiply();
+		bool test_oper_equality();
+	}
 }
 
 

@@ -70,9 +70,13 @@ public:
 	}
 
 	Mtx2x2 Inverse() const {
+		auto det = Det();
+		if (flt_cmp_rel(0, det))
+			return Mtx2x2::ZERO;
+
 		return Mtx2x2{ 
-			elements[1][1], -elements[0][1],
-			-elements[1][0], elements[0][0]
+			elements[1][1], -elements[1][0],
+			-elements[0][1], elements[0][0]
 		}.Scale(1.f / Det());
 	}
 
@@ -103,9 +107,13 @@ public:
 	inline Mtx2x2& operator-=(const Mtx2x2& rhs) { return Sub(rhs); }
 	inline Mtx2x2& operator*=(const float f) { return Scale(f); }
 
-	float elements[2][2];
+	union {
+		float elements[2][2];
+		float floats[4];
+	};
 
 	static const Mtx2x2 Identity;
+	static const Mtx2x2 ZERO;
 };
 
 inline float Det(const Mtx2x2& m)
@@ -143,8 +151,8 @@ inline Mtx2x2 Normalize(const Mtx2x2& mtx)
 inline Mtx2x2 Transpose(const Mtx2x2& mtx)
 {
 	return {
-		mtx.elements[0][0], mtx.elements[1][0],
-		mtx.elements[0][1], mtx.elements[1][1]
+		mtx.elements[0][0], mtx.elements[0][1],
+		mtx.elements[1][0], mtx.elements[1][1]
 	};
 }
 
@@ -162,8 +170,8 @@ inline Mtx2x2 ComponentMultiply(const Mtx2x2& lhs, const Mtx2x2& rhs)
 {
 	return {
 		lhs.elements[0][0] * rhs.elements[0][0],
-		lhs.elements[0][1] * rhs.elements[0][1],
 		lhs.elements[1][0] * rhs.elements[1][0],
+		lhs.elements[0][1] * rhs.elements[0][1],
 		lhs.elements[1][1] * rhs.elements[1][1]
 	};
 }
@@ -196,6 +204,14 @@ inline Mtx2x2 operator*(const Mtx2x2& lhs, const Mtx2x2& rhs)
 inline Vec2 operator*(const Mtx2x2& lhs, const Vec2& rhs)
 {
 	return Mul(lhs, rhs);
+}
+
+inline bool operator==(const Mtx2x2& lhs, const Mtx2x2& rhs)
+{
+	bool b{ true };
+	for (unsigned n{ 0 }; n < countof(Mtx2x2::floats); ++n)
+		b = b && flt_cmp_rel(lhs.floats[n], rhs.floats[n]);
+	return b;
 }
 
 #endif // GRAPHICS_TUTORIAL_MTX2X2_H
