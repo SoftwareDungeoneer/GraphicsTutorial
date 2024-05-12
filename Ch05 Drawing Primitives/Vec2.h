@@ -3,6 +3,9 @@
 #pragma once
 
 #include <cmath>
+
+#include "MathUtil.h"
+
 class Mtx2x2;
 
 class Vec2 {
@@ -46,20 +49,23 @@ public:
 		auto m{ Magnitude() };
 		x /= m;
 		y /= m;
+		return *this;
 	}
 
 	inline Vec2& operator+=(const Vec2& rhs) { Add(rhs); return *this; }
 	inline Vec2& operator-=(const Vec2& rhs) { Sub(rhs); return *this; }
 	inline Vec2& operator*=(float rhs) { Scale(rhs); return *this; }
 
-	inline bool operator==(const Vec2& rhs) {
-
-	}
 	float x, y;
 
 	static const Vec2 X_AXIS;
 	static const Vec2 Y_AXIS;
 };
+
+inline bool operator==(const Vec2& lhs, const Vec2& rhs)
+{
+	return flt_cmp_rel(lhs.x, rhs.x) && flt_cmp_rel(lhs.y, rhs.y);
+}
 
 inline Vec2 Scale(float lhs, const Vec2& rhs)
 {

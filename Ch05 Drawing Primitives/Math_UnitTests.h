@@ -38,7 +38,7 @@ namespace UnitTests::Math
 	}
 
 	// Vec 2 unit tests
-	namespace Vec2
+	namespace Vec2Tests
 	{
 		void run_all(unsigned* pSucceeded, unsigned* pFailed);
 

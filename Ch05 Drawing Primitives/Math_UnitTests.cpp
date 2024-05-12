@@ -27,7 +27,7 @@ namespace UnitTests::Math
 
 		const std::map<std::string, run_function> run_fns = {
 			{ "Math utility functions", UnitTests::Math::Utility::run_all },
-			{ "Math -- 2D Vector", UnitTests::Math::Vec2::run_all },
+			{ "Math -- 2D Vector", UnitTests::Math::Vec2Tests::run_all },
 		};
 
 		unsigned total_passed{ 0 };
