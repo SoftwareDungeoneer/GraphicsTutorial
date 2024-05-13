@@ -1,0 +1,37 @@
+cbuffer constants : register(b0)
+{
+    uint2 imageSize;  // Size of the input image in texels
+    int2 kernelDims;  // Kernel dimensions
+    int2 kernelTex;   // Dimensions of the backing texture (used to calc kernel texel offsets)
+    int2 kernelOffset; // An offset to add to the sampling uv, in whole texels
+};
+
+Texture2D colorTexture : register(t0);
+Texture2D kernelTexture : register(t1);
+
+SamplerState colorSampler : register(s0);
+SamplerState pointSampler : register(s1);
+
+float4 main(float2 uv : TEXCOORD) : SV_Target
+{
+    float2 texelOffsets = 1.0f / imageSize;
+    float4 colorAcc = { 0, 0, 0, 0 };
+    float totalWeight = 0;
+    
+    for (int ky = 0; ky < kernelDims.y; ++ky)
+    {
+        for (int kx = 0; kx < kernelDims.x; ++kx)
+        {
+            float2 kCoords = { kx, ky };
+            float2 kernelSamplePos = kCoords / kernelTex;
+            float weight = kernelTexture.Sample(pointSampler, kernelSamplePos).r;
+            totalWeight += weight;
+            
+            float2 texSamplePos = uv + (kCoords - kernelOffset) * texelOffsets;
+            float4 color = colorTexture.Sample(colorSampler, texSamplePos);
+            colorAcc += color * weight;
+        }
+    }
+    
+    return float4(colorAcc.rgb / totalWeight, 1.f);
+}
