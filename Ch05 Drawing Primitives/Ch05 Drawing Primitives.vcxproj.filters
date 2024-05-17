@@ -95,6 +95,7 @@
     <ClCompile Include="Mtx2x2_UnitTests.cpp">
       <Filter>Math\Unit Tests</Filter>
     </ClCompile>
+    <ClCompile Include="Ch10_KernelsAndFilters.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ComPtr.h">
@@ -152,6 +153,7 @@
     <ClInclude Include="Math_UnitTests.h">
       <Filter>Math\Unit Tests</Filter>
     </ClInclude>
+    <ClInclude Include="Ch10_KernelsAndFilters.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Shaders">

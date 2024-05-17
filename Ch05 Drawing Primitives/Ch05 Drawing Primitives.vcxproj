@@ -148,6 +148,7 @@
     <ClCompile Include="Ch07_Textures.cpp" />
     <ClCompile Include="Ch08_FontAtlas.cpp" />
     <ClCompile Include="Ch09_DepthBuffer.cpp" />
+    <ClCompile Include="Ch10_KernelsAndFilters.cpp" />
     <ClCompile Include="DebugDataWindow.cpp" />
     <ClCompile Include="FontLoader.cpp" />
     <ClCompile Include="Image.cpp" />
@@ -173,6 +174,7 @@
     <ClInclude Include="Ch07_Textures.h" />
     <ClInclude Include="Ch08_FontAtlas.h" />
     <ClInclude Include="Ch09_DepthBuffer.h" />
+    <ClInclude Include="Ch10_KernelsAndFilters.h" />
     <ClInclude Include="ComPtr.h" />
     <ClInclude Include="DebugDataWindow.h" />
     <ClInclude Include="FontLoader.h" />
