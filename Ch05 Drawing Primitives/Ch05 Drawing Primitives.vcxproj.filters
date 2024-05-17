@@ -40,9 +40,6 @@
     <FxCompile Include="DepthToGray.ps">
       <Filter>Shaders\Pixel</Filter>
     </FxCompile>
-    <FxCompile Include="shaders\pixel\Ch10_ImageProcessing.ps">
-      <Filter>Shaders\Pixel</Filter>
-    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -193,5 +190,10 @@
     <ResourceCompile Include="Resource.rc">
       <Filter>Windows</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\pixel\Ch10_ImageProcessing.ps">
+      <Filter>Shaders\Pixel</Filter>
+    </None>
   </ItemGroup>
 </Project>

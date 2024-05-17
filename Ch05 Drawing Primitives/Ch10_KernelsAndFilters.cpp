@@ -4,6 +4,13 @@
 
 #include "util.h"
 
+struct KernelConstants
+{
+	SIZE kernelSize;
+	SIZE textureSize;
+	SIZE kernelOffset;
+};
+
 const D3D11_INPUT_ELEMENT_DESC KernelFilters::Vertex::desc[] = {
 	{ "POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 8, D3D11_INPUT_PER_VERTEX_DATA, 0 }
@@ -36,7 +43,13 @@ void KernelFilters::CreateConstantBuffers()
 {
 	D3D11_BUFFER_DESC desc;
 	ZeroInitialize(desc);
-	desc.ByteWidth = align
+	desc.ByteWidth = aligned_size_16<D3D11_VIEWPORT>;
+	desc.Usage = D3D11_USAGE_DEFAULT;
+	desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+
+	pDevice->CreateBuffer(&desc, nullptr, &*quadInputCBuffer);
+
+	desc.ByteWidth = 
 }
 
 void KernelFilters::CreateSamplers()
