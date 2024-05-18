@@ -21,3 +21,19 @@ std::vector<BYTE> LoadFile(LPCTSTR filename)
 
 	return bytes;
 }
+
+std::vector<std::filesystem::directory_entry>
+GetPathEntries(const std::string& path, bool includeDirs)
+{
+	namespace fs = std::filesystem;
+
+	decltype(GetPathEntries("", false)) out;
+
+	for (const auto& entry : fs::directory_iterator(path)) {
+		if (!includeDirs && entry.is_directory())
+			continue;
+		out.emplace_back(entry);
+	}
+
+	return out;
+}

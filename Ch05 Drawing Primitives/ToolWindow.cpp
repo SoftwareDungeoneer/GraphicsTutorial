@@ -26,6 +26,7 @@ const std::array<LPCTSTR, static_cast<size_t>(RenderWindow::Demos::COUNT)> DemoS
 	_T("Textured Quad"),
 	_T("Font Atlas"),
 	_T("Depth Buffer"),
+	_T("Kernels"),
 };
 
 ToolWindow::ToolWindow(RenderWindow* rw, std::shared_ptr<Settings> _s):

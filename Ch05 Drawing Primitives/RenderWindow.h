@@ -32,6 +32,7 @@ public:
 		Textures,
 		FontAtlas,
 		DepthBuffer,
+		Kernels,
 
 		COUNT
 	};

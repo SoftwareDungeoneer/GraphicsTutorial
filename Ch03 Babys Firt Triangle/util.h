@@ -4,6 +4,7 @@
 
 #include <Windows.h>
 
+#include <filesystem>
 #include <type_traits>
 #include <memory>
 #include <vector>
@@ -17,5 +18,8 @@ void ZeroInitialize(T& t) noexcept {
 }
 
 std::vector<BYTE> LoadFile(LPCTSTR filename);
+
+std::vector<std::filesystem::directory_entry>
+GetPathEntries(const std::string& path, bool includeDirs = false);
 
 #endif // GRAPHICS_TUTORIAL_UTIL_H

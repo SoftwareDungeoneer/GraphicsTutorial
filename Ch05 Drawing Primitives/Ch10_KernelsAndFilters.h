@@ -6,7 +6,10 @@
 
 #include <d3d11.h>
 
+#include <memory>
 #include <vector>
+
+#include "Image.h"
 
 #include "ComPtr.h"
 
@@ -38,14 +41,19 @@ private:
 	ComPtr<ID3D11Buffer> kernelShaderCBuffer;
 
 	ComPtr<ID3D11SamplerState> linearSampler; // Used to sample texture inputs
-	ComPtr<ID3D11SamplerState> pointSampler;  // Used to sample kernel inputs
 	
 	std::vector<ComPtr<ID3D11Texture2D>> inputTextures;
+
+	static const Vertex unfilteredVerts[];
+	static const Vertex filteredVerts[];
+
+	std::vector<ComPtr<ID3D11Texture2D>> images;
 
 	void LoadShaders();
 	void LoadTextures();
 	void CreateConstantBuffers();
 	void CreateSamplers();
+	void CreateVertexBuffers();
 };
 
 #endif // GRAPHICS_TUTORIAL_CH10_KERNELS_AND_FILTERS_H
