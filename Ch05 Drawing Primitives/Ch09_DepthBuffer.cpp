@@ -64,7 +64,7 @@ void DepthBuffer::CreateVertexBuffer()
 {
 	D3D11_BUFFER_DESC desc;
 	ZeroInitialize(desc);
-	desc.ByteWidth = verts.size() * sizeof(Vertex);
+	desc.ByteWidth = static_cast<unsigned>(verts.size() * sizeof(Vertex));
 	desc.Usage = D3D11_USAGE_DEFAULT;
 	desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 
@@ -185,7 +185,7 @@ void DepthBuffer::Render()
 	pDeviceContext->VSSetShader(*depthVertexShader, nullptr, 0);
 	pDeviceContext->PSSetShader(*depthPixelShader, nullptr, 0);
 
-	pDeviceContext->Draw(verts.size(), 0);
+	pDeviceContext->Draw(static_cast<unsigned>(verts.size()), 0);
 
 	// We need to unbind the render targets and depth target before using them 
 	// as SRVs

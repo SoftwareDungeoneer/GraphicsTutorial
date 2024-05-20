@@ -28,10 +28,24 @@ public:
 		static const D3D11_INPUT_ELEMENT_DESC desc[];
 	};
 
+	virtual void NotifyKeyUp(unsigned key);
+
 protected:
 	virtual void Initialize();
+	virtual void ResizeNotify();
 
 private:
+	enum KernelSel {
+		kBoxBlur,
+		kGauss3,
+		kGauss5,
+		kGauss7,
+		kSobelX,
+		kSobelY,
+
+		COUNT
+	};
+
 	ComPtr<ID3D11VertexShader> quadVertexShader;
 	ComPtr<ID3D11InputLayout> quadInputLayout;
 	ComPtr<ID3D11Buffer> quadInputCBuffer;
@@ -42,18 +56,26 @@ private:
 
 	ComPtr<ID3D11SamplerState> linearSampler; // Used to sample texture inputs
 	
-	std::vector<ComPtr<ID3D11Texture2D>> inputTextures;
+	std::vector<std::pair<ComPtr<ID3D11Texture2D>, ComPtr<ID3D11ShaderResourceView>>> inputTextures;
+	decltype(inputTextures)::iterator selectedTexture;
 
-	static const Vertex unfilteredVerts[];
-	static const Vertex filteredVerts[];
+	ComPtr<ID3D11Buffer> unfilteredVertBuffer;
+	ComPtr<ID3D11Buffer> outputVertBuffer;
+	
+	Vertex unfilteredVerts[4];
+	Vertex filteredVerts[4];
 
-	std::vector<ComPtr<ID3D11Texture2D>> images;
+	ComPtr<ID3D11Texture2D> kernelTexture;
+	ComPtr<ID3D11ShaderResourceView> kernelSrv;
+	KernelSel activeKernel{ kBoxBlur };
 
 	void LoadShaders();
 	void LoadTextures();
 	void CreateConstantBuffers();
 	void CreateSamplers();
 	void CreateVertexBuffers();
+
+	void UpdateKernelTexture();
 };
 
 #endif // GRAPHICS_TUTORIAL_CH10_KERNELS_AND_FILTERS_H

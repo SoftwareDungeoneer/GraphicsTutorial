@@ -164,6 +164,7 @@ void RenderWindow::SetDemo(Demos demo)
 	{
 		activeRenderer.reset();
 		thunks[static_cast<unsigned>(demo)].fn(activeRenderer, hWnd);
+		activeRenderer->Resize(windowWidth, windowHeight);
 	}
 }
 
@@ -195,6 +196,15 @@ LRESULT CALLBACK RenderWindow::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARA
 
 		case WM_SIZE:
 			return Wnd->OnSize();
+
+		case WM_KEYDOWN:
+			return Wnd->OnKeyDown(wParam);
+
+		case WM_KEYUP:
+			return Wnd->OnKeyUp(wParam);
+
+		case WM_CHAR:
+			return Wnd->OnChar(wParam);
 
 		case WM_DESTROY:
 			return Wnd->OnDestroy();
@@ -261,6 +271,27 @@ LRESULT RenderWindow::OnSize()
 
 	UpdatePosition();
 
+	return 0;
+}
+
+LRESULT RenderWindow::OnKeyDown(WPARAM wParam)
+{
+	if (activeRenderer)
+		activeRenderer->NotifyKeyDown(static_cast<unsigned>(wParam));
+	return 0;
+}
+
+LRESULT RenderWindow::OnKeyUp(WPARAM wParam)
+{
+	if (activeRenderer)
+		activeRenderer->NotifyKeyUp(static_cast<unsigned>(wParam));
+	return 0;
+}
+
+LRESULT RenderWindow::OnChar(WPARAM wParam)
+{
+	if (activeRenderer)
+		activeRenderer->NotifyChar(static_cast<wchar_t>(wParam));
 	return 0;
 }
 

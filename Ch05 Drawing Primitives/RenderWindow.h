@@ -69,6 +69,9 @@ private:
 	LRESULT OnCommand(WPARAM, LPARAM);
 	LRESULT OnMove();
 	LRESULT OnSize();
+	LRESULT OnKeyDown(WPARAM);
+	LRESULT OnKeyUp(WPARAM);
+	LRESULT OnChar(WPARAM);
 	LRESULT OnNotifyDebugDataDestroyed();
 
 	// Command handlers

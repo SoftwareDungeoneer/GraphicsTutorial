@@ -9,7 +9,13 @@ Texture2D kernelTexture : register(t1);
 
 SamplerState colorSampler : register(s0);
 
-float4 main(float2 uv : TEXCOORD) : SV_Target
+struct PSIn
+{
+    float4 position : SV_Position;
+    float2 uv : TEXCOORD;
+};
+    
+float4 main(PSIn psIn) : SV_Target
 {
     float2 imageSize;
     colorTexture.GetDimensions(imageSize.x, imageSize.y);
@@ -26,7 +32,7 @@ float4 main(float2 uv : TEXCOORD) : SV_Target
             float weight = kernelTexture.Load(int3(0, kx, ky));
             totalWeight += weight;
             
-            float2 texSamplePos = uv + ((kCoords + kernelOffset) * texelOffsets);
+            float2 texSamplePos = psIn.uv + ((kCoords + kernelOffset) * texelOffsets);
             float4 color = colorTexture.Sample(colorSampler, texSamplePos);
             colorAcc += color * weight;
         }

@@ -276,8 +276,6 @@ void FontAtlas::RenderString(POINTF topleft, LPCTSTR lpsz, unsigned nChars, cons
 
 	pDevice->CreateBuffer(&bufferDesc, &srd, &*indexBuffer);
 
-
-
 	unsigned strides[]{ sizeof(Vertex) };
 	unsigned offsets[]{ 0 };
 	std::array<ID3D11Buffer*, 1> buffers{ *vb };

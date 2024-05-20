@@ -22,6 +22,10 @@ public:
 	virtual void Update(double elapsed) = 0;
 	virtual void Render() = 0;
 
+	virtual void NotifyKeyDown(unsigned key) {}
+	virtual void NotifyKeyUp(unsigned key) {}
+	virtual void NotifyChar(wchar_t ch) {}
+
 protected:
 
 	D3D11_VIEWPORT ViewportFromTexture(ComPtr<ID3D11Texture2D>& tex);
@@ -34,6 +38,8 @@ protected:
 
 	unsigned windowWidth;
 	unsigned windowHeight;
+
+	virtual void ResizeNotify() {};
 
 private:
 	void CreateD3DDevice();

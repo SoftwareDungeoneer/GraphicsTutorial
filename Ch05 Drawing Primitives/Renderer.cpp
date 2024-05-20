@@ -22,6 +22,8 @@ void Renderer::Resize(unsigned cx, unsigned cy)
 
 	if (pSwapChain)
 		pSwapChain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
+
+	ResizeNotify();
 }
 
 D3D11_VIEWPORT Renderer::ViewportFromTexture(ComPtr<ID3D11Texture2D>& tex)

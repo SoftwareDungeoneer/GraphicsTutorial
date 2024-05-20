@@ -24,7 +24,7 @@ VSOut main(VSIn vsIn)
 		float4(
 			((vsIn.pos.x * 2) / vpDimensions.x) - 1,
 			((vsIn.pos.y * 2) / vpDimensions.y) - 1,
-			1.f,
+			0.f,
 			1.f
 		),
 		vsIn.tex

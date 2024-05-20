@@ -40,6 +40,9 @@
     <FxCompile Include="DepthToGray.ps">
       <Filter>Shaders\Pixel</Filter>
     </FxCompile>
+    <FxCompile Include="shaders\pixel\Ch10_ImageProcessing.ps">
+      <Filter>Shaders\Pixel</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -53,7 +56,7 @@
     </ClCompile>
     <ClCompile Include="Ch07_Textures.cpp" />
     <ClCompile Include="Renderer.cpp">
-      <Filter>RendererBase</Filter>
+      <Filter>Rendering\RendererBase</Filter>
     </ClCompile>
     <ClCompile Include="RenderWindow.cpp">
       <Filter>Windows</Filter>
@@ -108,7 +111,7 @@
     </ClInclude>
     <ClInclude Include="Ch07_Textures.h" />
     <ClInclude Include="Renderer.h">
-      <Filter>RendererBase</Filter>
+      <Filter>Rendering\RendererBase</Filter>
     </ClInclude>
     <ClInclude Include="RenderWindow.h">
       <Filter>Windows</Filter>
@@ -168,9 +171,6 @@
     <Filter Include="Math">
       <UniqueIdentifier>{90326961-0f52-43f2-8fac-7c03d8a7b6c6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="RendererBase">
-      <UniqueIdentifier>{f74c2e72-6824-4263-94bf-9c1320bf6177}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Windows">
       <UniqueIdentifier>{1b1047e9-183f-471e-815c-1b09ef8c0077}</UniqueIdentifier>
     </Filter>
@@ -179,6 +179,15 @@
     </Filter>
     <Filter Include="Math\Unit Tests">
       <UniqueIdentifier>{7712c297-bf1b-4587-a555-9135508c8bff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering">
+      <UniqueIdentifier>{fc6df682-e173-43b0-8166-c4f6b44d784e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\RendererBase">
+      <UniqueIdentifier>{f74c2e72-6824-4263-94bf-9c1320bf6177}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Debug Draw">
+      <UniqueIdentifier>{a2f43f63-bcb9-4f3a-9682-3a9d3abb0482}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -190,10 +199,5 @@
     <ResourceCompile Include="Resource.rc">
       <Filter>Windows</Filter>
     </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="shaders\pixel\Ch10_ImageProcessing.ps">
-      <Filter>Shaders\Pixel</Filter>
-    </None>
   </ItemGroup>
 </Project>
