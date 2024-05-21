@@ -1,12 +1,14 @@
 #ifndef GRAPHICS_TUTORIAL_DEBUG_DRAW_H
 #define GRAPHICS_TUTORIAL_DEBUG_DRAW_H
-#pragma oncee
+#pragma once
 
 #include <Windows.h>
 #include <dxgi.h>
 #include <d3d11.h>
 
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "ComPtr.h"
 
@@ -24,7 +26,16 @@ public:
 
 	void RenderFrameTimes(POINT topLeft);
 
+	void Render();
+
 private:
+	struct LineSegment {
+		POINTF begin, end;
+		float color[4];
+	};
+
+	void CreateTextures();
+
 	ComPtr<ID3D11Device> pDevice;
 	ComPtr<ID3D11DeviceContext> pContext;
 	ComPtr<IDXGISwapChain> pSwapChain;
@@ -32,6 +43,8 @@ private:
 	ComPtr<ID3D11Texture2D> pFrameTimesTexture;
 	ComPtr<ID3D11ShaderResourceView> pFrameTimesSRV;
 	ComPtr<ID3D11RenderTargetView> pFrameTimesRTV;
+
+	std::vector<std::pair<POINT, POINT>> lineSegments;
 
 	float frameTimes[256];
 	unsigned frameHead{ 0 };

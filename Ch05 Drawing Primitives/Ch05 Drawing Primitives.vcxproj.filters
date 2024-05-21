@@ -160,6 +160,9 @@
     <ClInclude Include="DebugDraw.h">
       <Filter>Rendering\Debug Draw</Filter>
     </ClInclude>
+    <ClInclude Include="Color.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Shaders">

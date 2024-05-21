@@ -176,6 +176,7 @@
     <ClInclude Include="Ch08_FontAtlas.h" />
     <ClInclude Include="Ch09_DepthBuffer.h" />
     <ClInclude Include="Ch10_KernelsAndFilters.h" />
+    <ClInclude Include="Color.h" />
     <ClInclude Include="ComPtr.h" />
     <ClInclude Include="DebugDataWindow.h" />
     <ClInclude Include="DebugDraw.h" />
