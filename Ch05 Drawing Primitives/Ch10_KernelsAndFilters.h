@@ -36,6 +36,7 @@ protected:
 
 private:
 	enum KernelSel {
+		Unfiltered,
 		kBoxBlur,
 		kGauss3,
 		kGauss5,

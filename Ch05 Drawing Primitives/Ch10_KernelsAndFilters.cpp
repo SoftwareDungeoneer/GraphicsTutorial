@@ -12,6 +12,8 @@ struct KernelConstants
 	SIZE kernelOffset;
 };
 
+float Unfiltered[1][1]{ { 1.0f } };
+
 float BoxBlur[3][3]{
 	{ 1.0f, 1.0f, 1.0f },
 	{ 1.0f, 1.0f, 1.0f }, 
@@ -58,6 +60,7 @@ struct Kernel {
 	KernelConstants params;
 	float (*weights)[];
 } kernels[] = {
+	{ { { 1, 1 }, {  0,  0 } }, Unfiltered },
 	{ { { 3, 3 }, { -1, -1 } }, BoxBlur },
 	{ { { 3, 3 }, { -1, -1 } }, GaussianBlur3x3 },
 	{ { { 5, 5 }, { -2, -2 } }, GaussianBlur5x5 },
@@ -90,7 +93,7 @@ void KernelFilters::NotifyKeyUp(unsigned key)
 		break;
 
 	case VK_UP:
-		if (activeKernel == KernelSel::kBoxBlur)
+		if (activeKernel == KernelSel::Unfiltered)
 			activeKernel = KernelSel::COUNT;
 		activeKernel = static_cast<KernelSel>(activeKernel - 1);
 		UpdateKernelTexture();
@@ -99,7 +102,7 @@ void KernelFilters::NotifyKeyUp(unsigned key)
 	case VK_DOWN:
 		activeKernel = static_cast<KernelSel>(activeKernel + 1);
 		if (activeKernel == KernelSel::COUNT)
-			activeKernel = KernelSel::kBoxBlur;
+			activeKernel = KernelSel::Unfiltered;
 		UpdateKernelTexture();
 		break;
 	}
