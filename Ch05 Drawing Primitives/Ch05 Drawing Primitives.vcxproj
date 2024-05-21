@@ -150,6 +150,7 @@
     <ClCompile Include="Ch09_DepthBuffer.cpp" />
     <ClCompile Include="Ch10_KernelsAndFilters.cpp" />
     <ClCompile Include="DebugDataWindow.cpp" />
+    <ClCompile Include="DebugDraw.cpp" />
     <ClCompile Include="FontLoader.cpp" />
     <ClCompile Include="Image.cpp" />
     <ClCompile Include="main.cpp" />
@@ -177,6 +178,7 @@
     <ClInclude Include="Ch10_KernelsAndFilters.h" />
     <ClInclude Include="ComPtr.h" />
     <ClInclude Include="DebugDataWindow.h" />
+    <ClInclude Include="DebugDraw.h" />
     <ClInclude Include="FontLoader.h" />
     <ClInclude Include="Image.h" />
     <ClInclude Include="MathUtil.h" />

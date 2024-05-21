@@ -96,6 +96,9 @@
       <Filter>Math\Unit Tests</Filter>
     </ClCompile>
     <ClCompile Include="Ch10_KernelsAndFilters.cpp" />
+    <ClCompile Include="DebugDraw.cpp">
+      <Filter>Rendering\Debug Draw</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ComPtr.h">
@@ -154,6 +157,9 @@
       <Filter>Math\Unit Tests</Filter>
     </ClInclude>
     <ClInclude Include="Ch10_KernelsAndFilters.h" />
+    <ClInclude Include="DebugDraw.h">
+      <Filter>Rendering\Debug Draw</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Shaders">
