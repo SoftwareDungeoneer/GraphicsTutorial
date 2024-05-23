@@ -99,6 +99,9 @@
     <ClCompile Include="DebugDraw.cpp">
       <Filter>Rendering\Debug Draw</Filter>
     </ClCompile>
+    <ClCompile Include="RenderFont.cpp">
+      <Filter>Rendering</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ComPtr.h">
@@ -161,6 +164,9 @@
       <Filter>Rendering\Debug Draw</Filter>
     </ClInclude>
     <ClInclude Include="Color.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderFont.h">
       <Filter>Rendering</Filter>
     </ClInclude>
   </ItemGroup>

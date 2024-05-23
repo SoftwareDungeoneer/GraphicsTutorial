@@ -19,6 +19,7 @@ struct FontData
 namespace FontLoader
 {
 	FontData LoadFont(LPCTSTR facename, int height);
+
 	FontData ConvertFontToAtlas(HFONT hFont);
 }
 
