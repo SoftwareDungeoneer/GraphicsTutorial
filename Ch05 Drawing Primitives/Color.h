@@ -8,7 +8,8 @@ struct ColorF;
 
 struct Color {
 	Color() {}
-	Color(ColorF&);
+	Color(COLORREF c);
+	explicit Color(ColorF&);
 
 	union {
 		struct { char r, g, b, a; };
@@ -45,6 +46,14 @@ struct ColorF {
 	};
 };
 
+inline Color::Color(COLORREF c) :
+	r(GetRValue(c)),
+	g(GetGValue(c)),
+	b(GetBValue(c)),
+	a(255)
+{
+}
+
 inline Color::Color(ColorF& cf)
 {
 	r = static_cast<unsigned char>(cf.r * 255);
@@ -52,5 +61,6 @@ inline Color::Color(ColorF& cf)
 	b = static_cast<unsigned char>(cf.b * 255);
 	a = static_cast<unsigned char>(cf.a * 255);
 }
+
 #endif // GRAPHICS_TUTORIAL_COLOR_H
 
