@@ -30,7 +30,6 @@ D3D11_VIEWPORT Renderer::ViewportFromTexture(ComPtr<ID3D11Texture2D>& tex)
 {
 	D3D11_TEXTURE2D_DESC desc;
 	tex->GetDesc(&desc);
-	UINT nViewports{ 1 };
 	D3D11_VIEWPORT viewport{
 		0, 0,
 		desc.Width * 1.f,

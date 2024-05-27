@@ -50,7 +50,7 @@ inline Color::Color(COLORREF c) :
 	r(GetRValue(c)),
 	g(GetGValue(c)),
 	b(GetBValue(c)),
-	a(255)
+	a(char(255))
 {
 }
 

@@ -1,7 +1,11 @@
 #include "RenderFont.h"
 
+#include <tchar.h>
+
 #include <cassert>
 #include <vector>
+
+#include "util.h"
 
 struct GlyphVertex
 {
@@ -26,8 +30,44 @@ RenderFont::RenderFont(
 	assert(_device);
 	assert(_context);
 
+	LoadShaders();
+	CreateConstantBuffers();
 	CreateBlendState();
 	CreateSamplerState();
+}
+
+void RenderFont::LoadShaders()
+{
+	assert(pDevice);
+
+	auto vsBytes = LoadFile(_T("TexturedQuad.vsc"));
+	auto psBytes = LoadFile(_T("Ch08_BasicFont.psc"));
+	pDevice->CreateVertexShader(vsBytes.data(), vsBytes.size(), nullptr, &*vertexShader);
+	pDevice->CreatePixelShader(psBytes.data(), psBytes.size(), nullptr, &*pixelShader);
+
+	pDevice->CreateInputLayout(
+		GlyphVertex::desc,
+		countof(GlyphVertex::desc),
+		vsBytes.data(),
+		vsBytes.size(),
+		&*inputLayout
+	);
+}
+
+void RenderFont::CreateConstantBuffers()
+{
+	assert(pDevice);
+
+	D3D11_BUFFER_DESC desc;
+	ZeroInitialize(desc);
+	desc.Usage = D3D11_USAGE_DEFAULT;
+	desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	desc.ByteWidth = sizeof(ColorF);
+
+	pDevice->CreateBuffer(&desc, nullptr, &*colorConstantBuffer);
+
+	desc.ByteWidth = aligned_size_16<D3D11_VIEWPORT>;
+	pDevice->CreateBuffer(&desc, nullptr, &*viewportConstantBuffer);
 }
 
 void RenderFont::CreateBlendState()
@@ -78,6 +118,7 @@ void RenderFont::CreateFontTexture()
 	assert(pDevice);
 
 	std::vector<BYTE> grayscaleBits{ RemapFontBits() };
+	RescaleFontUVs();
 
 	D3D11_TEXTURE2D_DESC texDesc;
 	ZeroInitialize(texDesc);
@@ -128,8 +169,24 @@ std::vector<BYTE> RenderFont::RemapFontBits()
 	return vb;
 }
 
+void RenderFont::RescaleFontUVs()
+{
+	float cx = 1.f * fontData.bitmapInfo.bmiHeader.biWidth;
+	float cy = 1.f * fontData.bitmapInfo.bmiHeader.biHeight;
+
+	for (auto& [k, r] : fontData.glyphQuads)
+	{
+		r.left /= cx;
+		r.right /= cx;
+		r.top /= cy;
+		r.bottom /= cy;
+	}
+}
+
 void RenderFont::AllocateBufferSpace(unsigned nChars)
 {
+	assert(pDevice);
+
 	if (nChars <= cchHighWater)
 		return;
 
@@ -179,7 +236,90 @@ void RenderFont::LoadFont(LPCTSTR fontFace, int height)
 	CreateFontTexture();
 }
 
+void RenderFont::LayoutString(POINTF topleft, LPCTSTR lpsz, unsigned nChars)
+{
+	assert(pContext);
+	assert(nChars <= cchHighWater);
+
+	std::vector<GlyphVertex> verts(4 * cchHighWater, GlyphVertex{ {0.f, 0.f}, {0.f, 0.f} });
+	
+	const float bmpx = fontData.bitmapInfo.bmiHeader.biHeight * 1.f;
+	const float bmpy = fontData.bitmapInfo.bmiHeader.biWidth * 1.f;
+
+	for (unsigned n{ 0 }; n < nChars; ++n)
+	{
+		auto data = fontData.glyphQuads[lpsz[n]];
+		float height = data.bottom - data.top;
+		float width = data.right - data.left;
+		unsigned base = 4 * n;
+		verts[base] = GlyphVertex{ // Upper left vert
+			{ topleft.x, topleft.y },
+			{ data.left / bmpx, data.top / bmpy }
+		};
+		verts[base + 1] = GlyphVertex{ // Upper right vert
+			{ topleft.x + width, topleft.y },
+			{ data.right / bmpx, data.top / bmpy }
+		};
+		verts[base + 2] = GlyphVertex{ // Lower left vert
+			{ topleft.x, topleft.y - height },
+			{ data.left / bmpx, data.bottom / bmpy }
+		};
+		verts[base + 3] = GlyphVertex{ // lower right vert
+			{ topleft.x + width, topleft.y - height },
+			{ data.right / bmpx, data.bottom / bmpy }
+		};
+		topleft.x += width;
+	}
+
+	pContext->UpdateSubresource(*vertexBuffer, 0, nullptr, verts.data(), 0, 0);
+}
+
 void RenderFont::RenderString(POINTF topleft, LPCTSTR lpsz, unsigned nChars, const ColorF color)
 {
+	assert(pContext);
 
+	// Do CPU side string layout and buffer fixup
+	AllocateBufferSpace(nChars);
+	LayoutString(topleft, lpsz, nChars);
+
+	D3D11_VIEWPORT viewport;
+	unsigned numViewports{ 1 };
+	pContext->RSGetViewports(&numViewports, &viewport);
+
+	pContext->UpdateSubresource(*viewportConstantBuffer, 0, nullptr, &viewport, 0, 0);
+	pContext->UpdateSubresource(*colorConstantBuffer, 0, nullptr, color.channels, 0, 0);
+
+	unsigned strides[]{ sizeof(GlyphVertex) };
+	unsigned offsets[]{ 0 };
+
+	// Set up Input Assember
+	pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	pContext->IASetIndexBuffer(*indexBuffer, DXGI_FORMAT_R16_UINT, 0);
+	pContext->IASetVertexBuffers(0, 1, &*vertexBuffer, strides, offsets);
+
+	// Rasterizer Should be set up by whatever rendering was done earlier
+	
+	// Output merger already has render target set by calling stage, back up and set
+	// blend state
+	ComPtr<ID3D11BlendState> oldBlendState;
+	float blendFactors[4];
+	unsigned sampleMask;
+	pContext->OMGetBlendState(&*oldBlendState, blendFactors, &sampleMask);
+	pContext->OMSetBlendState(*alphaEnableBlendState, blendFactors, sampleMask);
+
+	// Set up vertex shader
+	pContext->VSSetShader(*vertexShader, nullptr, 0);
+	pContext->VSSetConstantBuffers(0, 1, &*viewportConstantBuffer);
+
+	// Set up pixel shader
+	pContext->PSSetShader(*pixelShader, nullptr, 0);
+	pContext->PSSetConstantBuffers(0, 1, &*colorConstantBuffer);
+	pContext->PSSetShaderResources(0, 1, &*fontSRV);
+	pContext->PSSetSamplers(0, 1, &*pointSampler);
+
+	// Issue batch
+	pContext->DrawIndexed(6 * nChars, 0, 0);
+
+	// Restore OM state
+	pContext->OMSetBlendState(*oldBlendState, blendFactors, sampleMask);
 }
