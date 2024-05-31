@@ -21,14 +21,15 @@ DebugDraw::DebugDraw(
 ) :
 	pDevice(_device),
 	pContext(_context),
-	pSwapChain(_swapChain)
+	pSwapChain(_swapChain),
+	debugFont(_device, _context)
 {
 	static_assert(offsetof(DebugText, color) == 16);
 
 	InitializeCriticalSection(&m_lock);
 
 	debugFont.LoadFont(debugDrawFontFace, debugFontSize);
-
+	memset(frameTimes, 0.0f, sizeof(frameTimes));
 	CreateTextures();
 }
 
@@ -79,6 +80,11 @@ void DebugDraw::RenderLines()
 
 void DebugDraw::RenderText()
 {
+	for (const auto& text : textSections)
+	{
+		std::wstring str{ WideStringFromString(text.text) };
+		debugFont.RenderString(text.topLeft, str.c_str(), (unsigned)str.size(), text.color);
+	}
 }
 
 void DebugDraw::RenderFPS()
