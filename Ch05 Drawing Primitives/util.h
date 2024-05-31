@@ -4,6 +4,7 @@
 
 #include <Windows.h>
 
+#include <cassert>
 #include <type_traits>
 #include <memory>
 #include <vector>
@@ -47,6 +48,46 @@ inline std::ostream& operator<<(std::ostream& lhs, const RECT& rhs)
 	lhs << "{ " << rhs.left << ", " << rhs.top
 		<< ", " << rhs.right << ", " << rhs.bottom << " }";
 	return lhs;
+}
+
+inline std::string StringFromWideString(const std::wstring& wstr) noexcept
+{
+	std::string out;
+	int size = WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), (int)wstr.size(), nullptr, 0, nullptr, nullptr);
+	if (size <= 0)
+		OutputDebugStringA("Wide string to string conversion failure\n");
+	assert(size > 0);
+	out.resize(size);
+	WideCharToMultiByte(
+		CP_UTF8, 
+		0, 
+		wstr.c_str(),
+		(int)wstr.size(),
+		out.data(),
+		(int)out.size(),
+		nullptr,
+		nullptr
+	);
+	return out;
+}
+
+inline std::wstring WideStringFromString(const std::string& str) noexcept
+{
+	std::wstring out;
+	int size = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), (int)str.size(), nullptr, 0);
+	if (size <= 0)
+		OutputDebugStringA("String to wide string conversion failure\n");
+	assert(size > 0);
+	out.resize(size);
+	MultiByteToWideChar(
+		CP_UTF8, 
+		0, 
+		str.c_str(), 
+		(int)str.size(),
+		out.data(), 
+		(int)out.size()
+	);
+	return out;
 }
 
 #endif // GRAPHICS_TUTORIAL_UTIL_H
