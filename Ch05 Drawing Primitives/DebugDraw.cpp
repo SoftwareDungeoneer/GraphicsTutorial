@@ -27,34 +27,14 @@ DebugDraw::DebugDraw(
 
 	InitializeCriticalSection(&m_lock);
 
-	debugFont = FontLoader::LoadFont(debugDrawFontFace, debugFontSize);
+	debugFont.LoadFont(debugDrawFontFace, debugFontSize);
+
 	CreateTextures();
 }
 
 DebugDraw::~DebugDraw()
 {
 	DeleteCriticalSection(&m_lock);
-}
-
-std::vector<BYTE> DebugDraw::RemapFontBits(FontData& fontData)
-{
-	std::vector<BYTE> vb;
-	constexpr float coefficients[4] = { 0.114f, 0.587f, 0.299f, 0.f };
-	auto length = fontData.DIBits.size() / 4;
-	vb.reserve(length);
-	for (unsigned pos{ 0 }; pos < length; ++pos)
-	{
-		float acc{ 0.f };
-		unsigned x = (pos) % fontData.bitmapInfo.bmiHeader.biWidth;
-		unsigned y = (pos) / fontData.bitmapInfo.bmiHeader.biWidth;
-		auto bp = fontData.DIBits.data() + (4 * pos);
-		for (unsigned n{ 0 }; n < 4; ++n)
-		{
-			acc += coefficients[n] * (*(bp + n));
-		}
-		vb.emplace_back(BYTE(acc));
-	}
-	return vb;
 }
 
 void DebugDraw::CreateTextures()
@@ -86,7 +66,21 @@ void DebugDraw::RenderFrameTimes(POINT topLeft)
 	fpsLocation = PointToPointF(topLeft);
 }
 
-void Render()
+void DebugDraw::Render()
 {
+	RenderLines();
+	RenderText();
+	RenderFPS();
+}
 
+void DebugDraw::RenderLines()
+{
+}
+
+void DebugDraw::RenderText()
+{
+}
+
+void DebugDraw::RenderFPS()
+{
 }

@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "Color.h"
-#include "FontLoader.h"
+#include "RenderFont.h"
 
 #include "ComPtr.h"
 
@@ -44,7 +44,6 @@ private:
 		std::string text;
 	};
 
-	std::vector<BYTE> RemapFontBits(FontData& fontData);
 	void CreateTextures();
 
 	void RenderLines();
@@ -69,7 +68,7 @@ private:
 	std::vector<LineSegment> lineSegments;
 	std::vector<DebugText> textSections;
 
-	FontData debugFont;
+	RenderFont debugFont;
 
 	float frameTimes[256];
 	unsigned frameHead{ 0 };
