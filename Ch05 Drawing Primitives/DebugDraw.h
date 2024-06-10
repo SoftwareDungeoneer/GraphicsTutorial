@@ -35,9 +35,12 @@ public:
 
 private:
 	struct LineSegment {
-		POINTF begin, end;
+		POINTF point;
 		ColorF color;
+
+		static const D3D11_INPUT_ELEMENT_DESC desc[];
 	};
+
 	struct DebugText {
 		POINTF topLeft;
 		__declspec(align(16)) ColorF color;
@@ -45,6 +48,7 @@ private:
 	};
 
 	void CreateTextures();
+	void ResizeLinesVertexBuffer();
 
 	void RenderLines();
 	void RenderText();
@@ -55,9 +59,9 @@ private:
 	ComPtr<ID3D11Device> pDevice;
 	ComPtr<ID3D11DeviceContext> pContext;
 	ComPtr<IDXGISwapChain> pSwapChain;
-	
-	ComPtr<ID3D11Texture2D> pFontAtlas;
-	ComPtr<ID3D11ShaderResourceView> pFontAtlasSRV;
+
+	ComPtr<ID3D11InputLayout> linesInputLayout;
+	ComPtr<ID3D11Buffer> pLinesVertexBuffer;
 
 	ComPtr<ID3D11Texture2D> pFrameTimesTexture;
 	ComPtr<ID3D11Texture2D> pFrameTimeFontAtlass;
@@ -69,6 +73,8 @@ private:
 	std::vector<DebugText> textSections;
 
 	RenderFont debugFont;
+
+	unsigned linesHighWaterMark{ 0 };
 
 	float frameTimes[256];
 	unsigned frameHead{ 0 };
