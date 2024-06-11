@@ -60,6 +60,9 @@ private:
 	ComPtr<ID3D11DeviceContext> pContext;
 	ComPtr<IDXGISwapChain> pSwapChain;
 
+	ComPtr<ID3D11VertexShader> clientSpaceVertexShader;
+	ComPtr<ID3D11PixelShader> solidFillPixelShader;
+
 	ComPtr<ID3D11InputLayout> linesInputLayout;
 	ComPtr<ID3D11Buffer> pLinesVertexBuffer;
 

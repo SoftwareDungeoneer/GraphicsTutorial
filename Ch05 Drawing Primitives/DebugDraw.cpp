@@ -33,6 +33,12 @@ DebugDraw::DebugDraw(
 
 	InitializeCriticalSection(&m_lock);
 
+	auto clientVsBuffer = LoadFile(_T("ClientToNdc.cso"));
+	auto solidFillPSBuffer = LoadFile(_T("SolidFill.cso"));
+	pDevice->CreateVertexShader(clientVsBuffer.data(), clientVsBuffer.size(), nullptr, &*clientSpaceVertexShader);
+	pDevice->CreatePixelShader(solidFillPSBuffer.data(), solidFillPSBuffer.size(), nullptr, &*solidFillPixelShader);
+
+
 	debugFont.LoadFont(debugDrawFontFace, debugFontSize);
 	memset(frameTimes, 0.0f, sizeof(frameTimes));
 	CreateTextures();
@@ -57,8 +63,12 @@ void DebugDraw::ResizeLinesVertexBuffer()
 	desc.Usage = D3D11_USAGE_DEFAULT;
 	desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 
+	EnterCriticalSection(&m_lock);
+
 	pLinesVertexBuffer.Release();
 	pDevice->CreateBuffer(&desc, nullptr, &*pLinesVertexBuffer);
+
+	LeaveCriticalSection(&m_lock);
 }
 
 void DebugDraw::PushFrameTime(float time)
@@ -71,25 +81,37 @@ void DebugDraw::PushFrameTime(float time)
 
 void DebugDraw::DrawLineSS(POINT start, POINT end, ColorF color)
 {
+	EnterCriticalSection(&m_lock);
 	lineSegments.emplace_back(PointToPointF(start), color);
 	lineSegments.emplace_back(PointToPointF(end), color);
+	LeaveCriticalSection(&m_lock);
 }
 
 void DebugDraw::DrawTextSS(POINT topLeft, const std::string& text, ColorF color)
 {
+	EnterCriticalSection(&m_lock);
 	textSections.emplace_back(PointToPointF(topLeft), color, text);
+	LeaveCriticalSection(&m_lock);
 }
 
 void DebugDraw::RenderFrameTimes(POINT topLeft)
 {
+	EnterCriticalSection(&m_lock);
 	fpsLocation = PointToPointF(topLeft);
+	LeaveCriticalSection(&m_lock);
 }
 
 void DebugDraw::Render()
 {
+	EnterCriticalSection(&m_lock);
+	
+	pContext->VSSetShader(*clientSpaceVertexShader, nullptr, 0);
+
 	RenderLines();
 	RenderText();
 	RenderFPS();
+
+	LeaveCriticalSection(&m_lock);
 }
 
 void DebugDraw::RenderLines()
