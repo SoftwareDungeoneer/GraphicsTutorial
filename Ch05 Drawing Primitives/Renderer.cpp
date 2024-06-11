@@ -7,6 +7,7 @@
 Renderer::Renderer(HWND _hWnd):hWnd(_hWnd)
 {
 	CreateD3DDevice();
+	pDebugDraw = std::make_shared<DebugDraw>(pDevice, pDeviceContext, pSwapChain);
 }
 
 Renderer::~Renderer()

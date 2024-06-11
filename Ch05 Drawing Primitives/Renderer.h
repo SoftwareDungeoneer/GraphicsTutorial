@@ -7,6 +7,9 @@
 #include <dxgi.h>
 
 #include <string>
+#include <memory>
+
+#include "DebugDraw.h"
 
 #include "ComPtr.h"
 
@@ -33,6 +36,8 @@ protected:
 	ComPtr<ID3D11Device> pDevice;
 	ComPtr<ID3D11DeviceContext> pDeviceContext;
 	ComPtr<IDXGISwapChain> pSwapChain;
+
+	std::shared_ptr<DebugDraw> pDebugDraw;
 
 	bool enableUpdate{ false };
 
