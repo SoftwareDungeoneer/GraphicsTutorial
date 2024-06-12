@@ -14,6 +14,11 @@ struct KernelConstants
 
 float Unfiltered[1][1]{ { 1.0f } };
 
+float Identity[3][3]{
+	{ 0.0f, 0.0f, 0.0f },
+	{ 0.0f, 1.0f, 0.0f },
+	{ 0.0f, 0.0f, 0.0f }
+};
 float BoxBlur[3][3]{
 	{ 1.0f, 1.0f, 1.0f },
 	{ 1.0f, 1.0f, 1.0f }, 
@@ -61,6 +66,7 @@ struct Kernel {
 	float (*weights)[];
 } kernels[] = {
 	{ { { 1, 1 }, {  0,  0 } }, Unfiltered },
+	{ { { 3, 3 }, { -1, -1 } }, Identity },
 	{ { { 3, 3 }, { -1, -1 } }, BoxBlur },
 	{ { { 3, 3 }, { -1, -1 } }, GaussianBlur3x3 },
 	{ { { 5, 5 }, { -2, -2 } }, GaussianBlur5x5 },
@@ -128,6 +134,23 @@ void KernelFilters::UpdateKernelTexture()
 	pDeviceContext->UpdateSubresource(*kernelShaderCBuffer, 0, nullptr, &k.params, 0, 0);
 }
 
+std::string KernelFilters::ActiveKernelString()
+{
+	switch (activeKernel)
+	{
+	case Unfiltered: return "Unfiltered";
+	case Identity: return "Identity";
+	case kBoxBlur: return "Box Blur";
+	case kGauss3: return "Gaussian 3x3";
+	case kGauss5: return "Gaussian 5x5";
+	case kGauss7: return "Gaussian 7x7";
+	case kSobelX: return "Sobel X";
+	case kSobelY: return "Sobel Y";
+
+	default:
+		return "Invalid value";
+	}
+}
 void KernelFilters::LoadShaders()
 {
 	auto vsBytes = LoadFile(_T("TexturedQuad.vsc"));
@@ -358,12 +381,18 @@ void KernelFilters::Render()
 
 	ID3D11ShaderResourceView* textures[] = { *(selectedTexture->second), *kernelSrv };
 	pDeviceContext->IASetVertexBuffers(0, 1, &*outputVertBuffer, strides, offsets);
-	
+
 	pDeviceContext->PSSetShader(*kernelShader, nullptr, 0);
 	pDeviceContext->PSSetShaderResources(1, 1, &*kernelSrv);
 	pDeviceContext->PSSetConstantBuffers(0, 1, &*kernelShaderCBuffer);
 
 	pDeviceContext->Draw(4, 0);
+
+	// Debug draw
+	POINT kernelLabelPt{ filteredVerts[0].Pos[0], filteredVerts[0].Pos[1] + 20};
+	pDebugDraw->DrawTextSS(kernelLabelPt, ActiveKernelString());
+
+	pDebugDraw->Render();
 
 	pSwapChain->Present(1, 0);
 }
