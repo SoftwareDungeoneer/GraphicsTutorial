@@ -102,6 +102,7 @@
     <ClCompile Include="RenderFont.cpp">
       <Filter>Rendering</Filter>
     </ClCompile>
+    <ClCompile Include="Ch11_PingPongBuffers.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ComPtr.h">
@@ -169,6 +170,7 @@
     <ClInclude Include="RenderFont.h">
       <Filter>Rendering</Filter>
     </ClInclude>
+    <ClInclude Include="Ch11_PingPongBuffers.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Shaders">

@@ -33,6 +33,7 @@ public:
 		FontAtlas,
 		DepthBuffer,
 		Kernels,
+		PingPongBuffers,
 
 		COUNT
 	};

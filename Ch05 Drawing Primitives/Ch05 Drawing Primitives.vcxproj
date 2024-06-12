@@ -149,6 +149,7 @@
     <ClCompile Include="Ch08_FontAtlas.cpp" />
     <ClCompile Include="Ch09_DepthBuffer.cpp" />
     <ClCompile Include="Ch10_KernelsAndFilters.cpp" />
+    <ClCompile Include="Ch11_PingPongBuffers.cpp" />
     <ClCompile Include="DebugDataWindow.cpp" />
     <ClCompile Include="DebugDraw.cpp" />
     <ClCompile Include="FontLoader.cpp" />
@@ -177,6 +178,7 @@
     <ClInclude Include="Ch08_FontAtlas.h" />
     <ClInclude Include="Ch09_DepthBuffer.h" />
     <ClInclude Include="Ch10_KernelsAndFilters.h" />
+    <ClInclude Include="Ch11_PingPongBuffers.h" />
     <ClInclude Include="Color.h" />
     <ClInclude Include="ComPtr.h" />
     <ClInclude Include="DebugDataWindow.h" />
