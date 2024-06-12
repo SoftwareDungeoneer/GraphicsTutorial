@@ -118,7 +118,7 @@ void RenderFont::CreateFontTexture()
 	assert(pDevice);
 
 	std::vector<BYTE> grayscaleBits{ RemapFontBits() };
-	RescaleFontUVs();
+	//RescaleFontUVs();
 
 	D3D11_TEXTURE2D_DESC texDesc;
 	ZeroInitialize(texDesc);
@@ -294,6 +294,7 @@ void RenderFont::RenderString(POINTF topleft, LPCTSTR lpsz, unsigned nChars, con
 
 	// Set up Input Assember
 	pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	pContext->IASetInputLayout(*inputLayout);
 	pContext->IASetIndexBuffer(*indexBuffer, DXGI_FORMAT_R16_UINT, 0);
 	pContext->IASetVertexBuffers(0, 1, &*vertexBuffer, strides, offsets);
 

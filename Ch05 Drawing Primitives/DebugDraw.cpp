@@ -7,7 +7,7 @@
 constexpr LPCTSTR debugDrawFontFace = _T("Calibri");
 constexpr unsigned debugFontSize = 19;
 
-const ColorF DebugDraw::defaultDebugColor{ 1.0f, 1.0f, 1.0f, 1.0f };
+const ColorF DebugDraw::defaultDebugColor{ 0.0f, 1.0f, 0.0f, 1.0f };
 
 const D3D11_INPUT_ELEMENT_DESC DebugDraw::LineSegment::desc[] = {
 	{ "POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
@@ -38,6 +38,13 @@ DebugDraw::DebugDraw(
 	pDevice->CreateVertexShader(clientVsBuffer.data(), clientVsBuffer.size(), nullptr, &*clientSpaceVertexShader);
 	pDevice->CreatePixelShader(solidFillPSBuffer.data(), solidFillPSBuffer.size(), nullptr, &*solidFillPixelShader);
 
+	pDevice->CreateInputLayout(
+		DebugDraw::LineSegment::desc,
+		countof(DebugDraw::LineSegment::desc),
+		clientVsBuffer.data(),
+		clientVsBuffer.size(),
+		&*linesInputLayout
+	);
 
 	debugFont.LoadFont(debugDrawFontFace, debugFontSize);
 	memset(frameTimes, 0.0f, sizeof(frameTimes));
@@ -106,6 +113,7 @@ void DebugDraw::Render()
 	EnterCriticalSection(&m_lock);
 	
 	pContext->VSSetShader(*clientSpaceVertexShader, nullptr, 0);
+	pContext->PSSetShader(*solidFillPixelShader, nullptr, 0);
 
 	RenderLines();
 	RenderText();
@@ -120,7 +128,10 @@ void DebugDraw::RenderLines()
 		return;
 
 	if (lineSegments.size() > linesHighWaterMark)
+	{
+		linesHighWaterMark = (unsigned)lineSegments.size();
 		ResizeLinesVertexBuffer();
+	}
 
 	pContext->UpdateSubresource(*pLinesVertexBuffer, 0, nullptr, lineSegments.data(), 0, 0);
 
@@ -143,6 +154,7 @@ void DebugDraw::RenderText()
 		std::wstring str{ WideStringFromString(text.text) };
 		debugFont.RenderString(text.topLeft, str.c_str(), (unsigned)str.size(), text.color);
 	}
+	textSections.clear();
 }
 
 void DebugDraw::RenderFPS()

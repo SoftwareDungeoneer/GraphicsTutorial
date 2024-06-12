@@ -12,6 +12,7 @@ Renderer::Renderer(HWND _hWnd):hWnd(_hWnd)
 
 Renderer::~Renderer()
 {
+	pDebugDraw.reset();
 	pDeviceContext->ClearState();
 	pDeviceContext->Flush();
 }
