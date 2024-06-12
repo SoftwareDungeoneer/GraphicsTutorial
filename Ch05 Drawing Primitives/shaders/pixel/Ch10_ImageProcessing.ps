@@ -29,7 +29,7 @@ float4 main(PSIn psIn) : SV_Target
         for (int kx = 0; kx < kernelDims.x; ++kx)
         {
             float2 kCoords = { kx, ky };
-            float weight = kernelTexture.Load(int3(0, kx, ky));
+            float weight = kernelTexture.Load(int3(kx, ky, 0));
             totalWeight += weight;
             
             float2 texSamplePos = psIn.uv + ((kCoords + kernelOffset) * texelOffsets);
