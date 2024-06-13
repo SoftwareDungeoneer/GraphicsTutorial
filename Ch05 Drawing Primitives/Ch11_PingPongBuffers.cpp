@@ -13,14 +13,16 @@ struct KernelConstants
 float GaussX[1][3]{ 1.f, 2.f, 1.f };
 float GaussY[3][1]{ {1.f}, {2.f}, {1.f} };
 
-struct Kernel {
-	KernelConstants params;
-	float(*weights)[];
-} kernels[] = {
-	{ { { 1, 3 }, {  -1,  0 } }, GaussX },
-	{ { { 3, 1 }, {   0, -1 } }, GaussY },
-};
-
+namespace
+{
+	struct Kernel {
+		KernelConstants params;
+		float(*weights)[];
+	} kernels[] = {
+		{ { { 3, 1 }, {  -1,  0 } }, GaussX },
+		{ { { 1, 3 }, {   0, -1 } }, GaussY },
+	};
+}
 //static_assert(PingPongBuffers::KernelSel::COUNT == countof(kernels));
 
 const D3D11_INPUT_ELEMENT_DESC PingPongBuffers::Vertex::desc[] = {
@@ -49,10 +51,12 @@ void PingPongBuffers::UpdateKernelTexture()
 
 void PingPongBuffers::LoadShaders()
 {
+	auto quadVsBytes = LoadFile(_T("FullscreenQuad.vsc"));
 	auto vsBytes = LoadFile(_T("TexturedQuad.vsc"));
 	auto psUnfiltered = LoadFile(_T("TexturedQuad.psc"));
 	auto psFilterBytes = LoadFile(_T("Ch10_ImageProcessing.psc"));
 
+	pDevice->CreateVertexShader(quadVsBytes.data(), quadVsBytes.size(), nullptr, &*proceduralQuadShader);
 	pDevice->CreateVertexShader(vsBytes.data(), vsBytes.size(), nullptr, &*quadVertexShader);
 	pDevice->CreatePixelShader(psUnfiltered.data(), psUnfiltered.size(), nullptr, &*unfilteredShader);
 	pDevice->CreatePixelShader(psFilterBytes.data(), psFilterBytes.size(), nullptr, &*kernelShader);
@@ -155,22 +159,47 @@ void PingPongBuffers::CreateSamplers()
 
 void PingPongBuffers::CreateVertexBuffers()
 {
-	D3D11_BUFFER_DESC desc;
-	ZeroInitialize(desc);
-	desc.ByteWidth = sizeof(unfilteredVerts);
-	desc.Usage = D3D11_USAGE_DEFAULT;
-	desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	float top = windowHeight - 20.f;
+	float left = 0;
+	float width = 256;
+	float height = 256;
+
+	Vertex verts[4] = {
+		{ { left, top }, { 0, 0 } },
+		{ { left + width, top }, { 1, 0 } },
+		{ { left, top - height }, { 0, 1 } },
+		{ { left + width, top - height }, { 1, 1, } },
+	};
+
+	D3D11_BUFFER_DESC bufferDesc;
+	ZeroInitialize(bufferDesc);
+	bufferDesc.ByteWidth = sizeof(verts);
+	bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 
 	D3D11_SUBRESOURCE_DATA srd;
 	ZeroInitialize(srd);
-	srd.pSysMem = unfilteredVerts;
+	srd.pSysMem = verts;
 
-	pDevice->CreateBuffer(&desc, &srd, &*unfilteredVertBuffer);
+	pDevice->CreateBuffer(&bufferDesc, &srd, &*unfilteredVertBuffer);
 
-	srd.pSysMem = filteredVerts;
-	pDevice->CreateBuffer(&desc, &srd, &*outputVertBuffer);
+	for (auto& v : verts)
+		v.Pos[0] += 256.0f;
 
-	ResizeNotify();
+	pDevice->CreateBuffer(&bufferDesc, &srd, &*outputVertBuffer);
+
+	for (auto& v : verts)
+	{
+		v.Pos[0] -= 256.0f;
+		v.Pos[1] -= 276.0f;
+	}
+
+	pDevice->CreateBuffer(&bufferDesc, &srd, &*thirdPassVertBuffer);
+
+	for (auto& v : verts)
+		v.Pos[0] += 256.0f;
+
+	pDevice->CreateBuffer(&bufferDesc, &srd, &*seventhPassVertBuffer);
 }
 
 void PingPongBuffers::CreatePingPongBuffers()
@@ -214,32 +243,12 @@ void PingPongBuffers::Initialize()
 	CreateVertexBuffers();
 	CreatePingPongBuffers();
 	UpdateKernelTexture();
+	ResizeNotify();
 }
 
 void PingPongBuffers::ResizeNotify()
 {
-	int mid_y = windowHeight / 2;
-	float top_y = mid_y + 256.f;
-	float bottom_y = mid_y - 256.f;
-	float left = 0;
-	float right = 512;
 
-	unfilteredVerts[0] = Vertex{ { left, top_y }, { 0, 0 } };
-	unfilteredVerts[1] = Vertex{ { right, top_y }, { 1, 0 } };
-	unfilteredVerts[2] = Vertex{ { left, bottom_y }, { 0, 1 } };
-	unfilteredVerts[3] = Vertex{ { right, bottom_y }, { 1, 1, } };
-
-	left = right;
-	right += 512;
-	filteredVerts[0] = Vertex{ { left, top_y }, { 0, 0 } };
-	filteredVerts[1] = Vertex{ { right, top_y }, { 1, 0 } };
-	filteredVerts[2] = Vertex{ { left, bottom_y }, { 0, 1 } };
-	filteredVerts[3] = Vertex{ { right, bottom_y }, { 1, 1, } };
-
-	if (unfilteredVertBuffer)
-		pDeviceContext->UpdateSubresource(*unfilteredVertBuffer, 0, nullptr, unfilteredVerts, 0, 0);
-	if (outputVertBuffer)
-		pDeviceContext->UpdateSubresource(*outputVertBuffer, 0, nullptr, filteredVerts, 0, 0);
 }
 
 void PingPongBuffers::Update(double elapsed)
@@ -249,7 +258,7 @@ void PingPongBuffers::Update(double elapsed)
 	enableUpdate = true;
 }
 
-void PingPongBuffers::BlurPass(ComPtr<ID3D11ShaderResourceView> input)
+void PingPongBuffers::BlurPass(ComPtr<ID3D11ShaderResourceView>& input)
 {
 	ComPtr<ID3D11Resource> pResource;
 	input->GetResource(&*pResource);
@@ -257,12 +266,33 @@ void PingPongBuffers::BlurPass(ComPtr<ID3D11ShaderResourceView> input)
 	if (!srvTexture)
 		return;
 	
+	unsigned viewportCount{ 1 };
 	D3D11_VIEWPORT viewport = ViewportFromTexture(srvTexture);
-
+	D3D11_VIEWPORT oldViewport;
+	pDeviceContext->RSGetViewports(&viewportCount, &oldViewport);
 	pDeviceContext->RSSetViewports(1, &viewport);
-	pDeviceContext->OMSetRenderTargets(1, &*pingPongBuffers[0].rtv, nullptr);
+
+	pDeviceContext->VSSetShader(*proceduralQuadShader, nullptr, 0);
+	pDeviceContext->PSSetShader(*kernelShader, nullptr, 0);
+
+	pDeviceContext->PSSetConstantBuffers(0, 1, &*kernelShaderCBuffer);
+
+	pDeviceContext->OMSetRenderTargets(0, nullptr, nullptr);
 
 	pDeviceContext->PSSetShaderResources(0, 1, &*input);
+	pDeviceContext->PSSetShaderResources(1, 1, &*kernelSrv);
+	pDeviceContext->OMSetRenderTargets(1, &*pingPongBuffers[0].rtv, nullptr);
+	pDeviceContext->UpdateSubresource(*kernelShaderCBuffer, 0, nullptr, &kernels[0].params, 0, 0);
+	pDeviceContext->Draw(4, 0);
+
+	pDeviceContext->OMSetRenderTargets(0, nullptr, nullptr);
+
+	pDeviceContext->PSSetShaderResources(0, 1, &*pingPongBuffers[0].srv);
+	pDeviceContext->OMSetRenderTargets(1, &*pingPongBuffers[1].rtv, nullptr);
+	pDeviceContext->UpdateSubresource(*kernelShaderCBuffer, 0, nullptr, &kernels[1].params, 0, 0);
+	pDeviceContext->Draw(4, 0);
+	
+	pDeviceContext->RSSetViewports(1, &oldViewport);
 
 }
 
@@ -288,8 +318,6 @@ void PingPongBuffers::Render()
 	pDeviceContext->IASetInputLayout(*quadInputLayout);
 	pDeviceContext->IASetVertexBuffers(0, 1, &*unfilteredVertBuffer, strides, offsets);
 
-	pDeviceContext->RSSetViewports(1, &viewport);
-
 	D3D11_RASTERIZER_DESC rsd;
 	ZeroInitialize(rsd);
 	rsd.FillMode = D3D11_FILL_SOLID;
@@ -302,6 +330,8 @@ void PingPongBuffers::Render()
 
 	pDeviceContext->RSSetState(*rstate);
 
+	pDeviceContext->RSSetViewports(1, &viewport);
+
 	pDeviceContext->OMSetRenderTargets(1, &*pRenderTarget, nullptr);
 
 	pDeviceContext->VSSetShader(*quadVertexShader, nullptr, 0);
@@ -313,16 +343,39 @@ void PingPongBuffers::Render()
 
 	pDeviceContext->Draw(4, 0);
 
-	ID3D11ShaderResourceView* textures[] = { *(selectedTexture->second), *kernelSrv };
+	BlurPass(inputSRV);
+
 	pDeviceContext->IASetVertexBuffers(0, 1, &*outputVertBuffer, strides, offsets);
+	pDeviceContext->OMSetRenderTargets(1, &*pRenderTarget, nullptr);
+	pDeviceContext->PSSetShaderResources(0, 1, &*pingPongBuffers[1].srv);
+	pDeviceContext->VSSetShader(*quadVertexShader, nullptr, 0);
+	pDeviceContext->PSSetShader(*unfilteredShader, nullptr, 0);
+	pDeviceContext->Draw(4, 0);
+	
+	BlurPass(pingPongBuffers[1].srv); // Second
+	BlurPass(pingPongBuffers[1].srv); // third
+	pDeviceContext->IASetVertexBuffers(0, 1, &*thirdPassVertBuffer, strides, offsets);
+	pDeviceContext->OMSetRenderTargets(1, &*pRenderTarget, nullptr);
+	pDeviceContext->PSSetShaderResources(0, 1, &*pingPongBuffers[1].srv);
+	pDeviceContext->VSSetShader(*quadVertexShader, nullptr, 0);
+	pDeviceContext->PSSetShader(*unfilteredShader, nullptr, 0);
+	pDeviceContext->Draw(4, 0);
 
-	pDeviceContext->PSSetShader(*kernelShader, nullptr, 0);
-	pDeviceContext->PSSetShaderResources(1, 1, &*kernelSrv);
-	pDeviceContext->PSSetConstantBuffers(0, 1, &*kernelShaderCBuffer);
+	for (unsigned n{ 0 }; n < 4; ++n)
+		BlurPass(pingPongBuffers[1].srv);
 
+	pDeviceContext->OMSetRenderTargets(1, &*pRenderTarget, nullptr);
+	pDeviceContext->PSSetShaderResources(0, 1, &*pingPongBuffers[1].srv);
+	pDeviceContext->IASetVertexBuffers(0, 1, &*seventhPassVertBuffer, strides, offsets);
+	pDeviceContext->VSSetShader(*quadVertexShader, nullptr, 0);
+	pDeviceContext->PSSetShader(*unfilteredShader, nullptr, 0);
 	pDeviceContext->Draw(4, 0);
 
 	// Debug draw
+	pDebugDraw->DrawTextSS({ 0, (long)windowHeight }, "Input texture");
+	pDebugDraw->DrawTextSS({ 256, (long)windowHeight }, "First pass");
+	pDebugDraw->DrawTextSS({ 0, (long)windowHeight - 276 }, "Third pass");
+	pDebugDraw->DrawTextSS({ 256, (long)windowHeight - 276 }, "Final pass");
 	pDebugDraw->Render();
 
 	pSwapChain->Present(1, 0);

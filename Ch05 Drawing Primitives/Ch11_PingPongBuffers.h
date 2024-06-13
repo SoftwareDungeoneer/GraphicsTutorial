@@ -33,6 +33,7 @@ protected:
 	virtual void ResizeNotify();
 
 private:
+	ComPtr<ID3D11VertexShader> proceduralQuadShader;
 	ComPtr<ID3D11VertexShader> quadVertexShader;
 	ComPtr<ID3D11InputLayout> quadInputLayout;
 	ComPtr<ID3D11Buffer> quadInputCBuffer;
@@ -50,9 +51,6 @@ private:
 	ComPtr<ID3D11Buffer> outputVertBuffer;
 	ComPtr<ID3D11Buffer> thirdPassVertBuffer;
 	ComPtr<ID3D11Buffer> seventhPassVertBuffer;
-
-	Vertex unfilteredVerts[4];
-	Vertex filteredVerts[4];
 
 	ComPtr<ID3D11Texture2D> kernelTexture;
 	ComPtr<ID3D11ShaderResourceView> kernelSrv;
@@ -74,7 +72,7 @@ private:
 
 	void UpdateKernelTexture();
 
-	void BlurPass(ComPtr<ID3D11ShaderResourceView> input);
+	void BlurPass(ComPtr<ID3D11ShaderResourceView>& input);
 };
 
 #endif // GRAPHICS_TUTORIAL_CH11_PING_PONG_BUFFERS_H

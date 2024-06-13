@@ -61,19 +61,22 @@ float SobelY[3][3]{
 	{ -1, -2, -1 }
 };
 
-struct Kernel {
-	KernelConstants params;
-	float (*weights)[];
-} kernels[] = {
-	{ { { 1, 1 }, {  0,  0 } }, Unfiltered },
-	{ { { 3, 3 }, { -1, -1 } }, Identity },
-	{ { { 3, 3 }, { -1, -1 } }, BoxBlur },
-	{ { { 3, 3 }, { -1, -1 } }, GaussianBlur3x3 },
-	{ { { 5, 5 }, { -2, -2 } }, GaussianBlur5x5 },
-	{ { { 7, 7 }, { -3, -3 } }, GaussianBlur7x7 },
-	{ { { 3, 3 }, { -1, -1 } }, SobelX },
-	{ { { 3, 3 }, { -1, -1 } }, SobelY },
-};
+namespace
+{
+	struct Kernel {
+		KernelConstants params;
+		float(*weights)[];
+	} kernels[] = {
+		{ { { 1, 1 }, {  0,  0 } }, Unfiltered },
+		{ { { 3, 3 }, { -1, -1 } }, Identity },
+		{ { { 3, 3 }, { -1, -1 } }, BoxBlur },
+		{ { { 3, 3 }, { -1, -1 } }, GaussianBlur3x3 },
+		{ { { 5, 5 }, { -2, -2 } }, GaussianBlur5x5 },
+		{ { { 7, 7 }, { -3, -3 } }, GaussianBlur7x7 },
+		{ { { 3, 3 }, { -1, -1 } }, SobelX },
+		{ { { 3, 3 }, { -1, -1 } }, SobelY },
+	};
+}
 
 //static_assert(KernelFilters::KernelSel::COUNT == countof(kernels));
 
